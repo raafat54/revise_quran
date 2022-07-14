@@ -1,7 +1,9 @@
 package com.raafat.revise
 
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -235,7 +237,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-            if ((textView.lineCount + 8) * textView.lineHeight / 2 > textView.height) {
+            if ((textView.lineCount + 2) * textView.lineHeight  > textView.height) {
                 if (i == getWords(globalVerse, gson).size) {
                     textView.text = current
                 } else {
@@ -356,7 +358,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         launch.setOnClickListener {
-            startNewActivity(globalVerse)
+            val appisFound = isAppInstalled(this, "com.quran.labs.androidquran")
+            if(appisFound)
+                startNewActivity(globalVerse)
+            else{
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.quran.labs.androidquran")))
+            }
+
         }
     }
 
@@ -379,6 +387,17 @@ class MainActivity : AppCompatActivity() {
         intent.action = Intent.ACTION_VIEW
         intent.data = Uri.parse("quran://${gson[verse].sora}/${gson[verse].ayaNo}")
         startActivity(intent)
+    }
+
+    fun isAppInstalled(context: Context, packageName: String?): Boolean {
+        return try {
+            if (packageName != null) {
+                context.packageManager.getApplicationInfo(packageName, 0)
+            }
+            true
+        } catch (e: PackageManager.NameNotFoundException) {
+            false
+        }
     }
 
 
