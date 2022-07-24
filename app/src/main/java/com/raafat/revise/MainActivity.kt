@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -106,7 +107,7 @@ class MainActivity : AppCompatActivity() {
             AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>,
-                view: View, position: Int, id: Long
+                view: View?, position: Int, id: Long
             ) {
                 if (clicked) {
                     sura = position + 1
@@ -220,7 +221,6 @@ class MainActivity : AppCompatActivity() {
                     i = 0
                     ++globalVerse
                     stack.push(current.toString())
-                    current.clear()
 
                     slider.value = gson[globalVerse].ayaNo.toFloat()
                     ayaCount.text = "${slider.value.toInt()}"
@@ -240,8 +240,10 @@ class MainActivity : AppCompatActivity() {
             if ((textView.lineCount + 2) * textView.lineHeight  > textView.height) {
                 if (i == getWords(globalVerse, gson).size) {
                     textView.text = current
-                } else {
-
+                } else if(i == 1) {
+                    textView.text =
+                        current.clear().append(getWords(globalVerse, gson)[i - 1]).append(" ")
+                } else{
                     stack.push(
                         current.removeRange(
                             current.length - " ${getWords(globalVerse, gson)[i - 1]}".length,
@@ -256,7 +258,66 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+        textView.setOnLongClickListener(object : OnContinuousClickListener(
+             1000
+        ){
+            override fun onContinuousClick(v: View?) {
+                undo.isClickable = true
+                Log.i("asd", "onContinuousClick: $i")
+                textView.maxLines = 10
+                textView.setTextColor(Color.WHITE)
 
+                if (i <= getWords(globalVerse, gson).size - 2) {
+                    if (i == getWords(globalVerse, gson).size - 2) {
+                        textView.text = current.append(getWords(globalVerse, gson)[i++]).append(" ")
+                            .append(getWords(globalVerse, gson)[i++]).append(" ")
+
+
+                    } else {
+                        textView.text = current.append(getWords(globalVerse, gson)[i++]).append(" ")
+                    }
+                } else {
+                    if (globalVerse != 6235) {
+                        i = 0
+                        ++globalVerse
+                        stack.push(current.toString())
+
+                        slider.value = gson[globalVerse].ayaNo.toFloat()
+                        ayaCount.text = "${slider.value.toInt()}"
+                        if (currentSura != gson[globalVerse].sora) {
+                            spinner.setSelection(currentSura, true)
+                            current.clear()
+                            stack.clear()
+                            currentSura = gson[globalVerse].sora
+                        }
+                        textView.text = current.append(getWords(globalVerse, gson)[i++]).append(" ")
+
+                    }
+                }
+
+
+
+                if ((textView.lineCount + 2) * textView.lineHeight  > textView.height) {
+                    if (i == getWords(globalVerse, gson).size) {
+                        textView.text = current
+                    } else if(i == 1) {
+                        textView.text =
+                            current.clear().append(getWords(globalVerse, gson)[i - 1]).append(" ")
+                    } else{
+                        stack.push(
+                            current.removeRange(
+                                current.length - " ${getWords(globalVerse, gson)[i - 1]}".length,
+                                current.length
+                            ).toString()
+                        )
+
+                        textView.text =
+                            current.clear().append(getWords(globalVerse, gson)[i - 1]).append(" ")
+                    }
+                }
+            }
+
+        })
 
         previous.setOnClickListener {
 
@@ -306,6 +367,47 @@ class MainActivity : AppCompatActivity() {
                 textView.maxLines = 1
             }
         }
+
+
+        undo.setOnLongClickListener(object : OnContinuousClickListener() {
+            override fun onContinuousClick(v: View?) {
+                if (i > 0 && current.isNotEmpty()) {
+
+                    if (i == getWords(globalVerse, gson).size) {
+                        current.delete(
+                            current.length - "   ${getWords(globalVerse, gson)[i - 2]}".length,
+                            current.length
+                        )
+                        i-=2
+                    }
+                    else {
+
+                        current.delete(
+                            current.length - " ${getWords(globalVerse, gson)[i - 1]}".length,
+                            current.length
+                        )
+                        i--
+                    }
+
+                    textView.text = current.toString()
+
+
+                    if (i > 0 && current.length < 2)
+                        textView.text = current.clear().append(stack.pop())
+
+                }
+
+
+                if (i == 0 && stack.isNotEmpty()){
+                    globalVerse--
+                    i = getWords(globalVerse, gson).size
+                    textView.text = current.clear().append(stack.pop())
+                    slider.value = gson[globalVerse].ayaNo.toFloat()
+                    ayaCount.text = "${slider.value.toInt()}"
+                }
+            }
+
+        })
 
         undo.setOnClickListener {
 
