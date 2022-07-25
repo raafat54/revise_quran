@@ -166,7 +166,7 @@ class MainActivity : AppCompatActivity() {
                     ((gson.filter { Sura -> Sura.sora == sura }).filter { Aya -> Aya.ayaNo == verse })[0].id - 1
                 i = 0
                 current.clear()
-
+                stack.clear()
 
                 textView.text = getWords(globalVerse, gson).joinToString(" ")
                 textView.setTextColor(Color.GRAY)
@@ -183,6 +183,7 @@ class MainActivity : AppCompatActivity() {
                     ((gson.filter { Sura -> Sura.sora == sura }).filter { Aya -> Aya.ayaNo == verse })[0].id - 1
                 i = 0
                 current.clear()
+                stack.clear()
 
 
                 if (slider.value == 1f)
