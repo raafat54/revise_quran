@@ -114,38 +114,40 @@ class MainActivity : AppCompatActivity() {
                 parent: AdapterView<*>,
                 view: View?, position: Int, id: Long
             ) {
-                if (clicked) {
-                    sura = position + 1
-                    i = 0
-                    current.clear()
+                if (position >= 0){
+                    if (clicked) {
+                        sura = position + 1
+                        i = 0
+                        current.clear()
 
 
-                    slider.value = 1f
-                    ayaCount.text = "${slider.value.toInt()}"
-                    globalVerse =
-                        ((gson.filter { Sura -> Sura.sora == sura }).filter { Aya -> Aya.ayaNo == 1 })[0].id - 1
+                        slider.value = 1f
+                        ayaCount.text = "${slider.value.toInt()}"
+                        globalVerse =
+                            ((gson.filter { Sura -> Sura.sora == sura }).filter { Aya -> Aya.ayaNo == 1 })[0].id - 1
 
-                    textView.text = getWords(globalVerse, gson).joinToString(" ")
-                    textView.setTextColor(Color.GRAY)
-                    textView.maxLines = 1
+                        textView.text = getWords(globalVerse, gson).joinToString(" ")
+                        textView.setTextColor(Color.GRAY)
+                        textView.maxLines = 1
 
-                    currentSura = gson[globalVerse].sora
-                    slider.valueTo = numberOfAyahsForSuraArray[position].toFloat()
+                        currentSura = gson[globalVerse].sora
+                        slider.valueTo = numberOfAyahsForSuraArray[position].toFloat()
 
-                } else {
-                    clicked = true
-                    sura = position + 1
-                    i = 0
-                    current.clear()
+                    } else {
+                        clicked = true
+                        sura = position + 1
+                        i = 0
+                        current.clear()
 
 
-                    textView.text = getWords(globalVerse, gson).joinToString(" ")
-                    textView.setTextColor(Color.GRAY)
-                    textView.maxLines = 1
+                        textView.text = getWords(globalVerse, gson).joinToString(" ")
+                        textView.setTextColor(Color.GRAY)
+                        textView.maxLines = 1
 
-                    currentSura = gson[globalVerse].sora
-                    slider.valueTo = numberOfAyahsForSuraArray[position].toFloat()
+                        currentSura = gson[globalVerse].sora
+                        slider.valueTo = numberOfAyahsForSuraArray[position].toFloat()
 
+                    }
                 }
 
             }
@@ -319,7 +321,7 @@ class MainActivity : AppCompatActivity() {
 
                     if (i == getWords(globalVerse, gson).size) {
                         current.delete(
-                            current.length - "   ${getWords(globalVerse, gson)[i - 2]}".length,
+                            current.length - "    ${getWords(globalVerse, gson)[i - 2]}".length,
                             current.length
                         )
                         i-=2
@@ -359,7 +361,7 @@ class MainActivity : AppCompatActivity() {
 
                 if (i == getWords(globalVerse, gson).size) {
                     current.delete(
-                        current.length - "   ${getWords(globalVerse, gson)[i - 2]}".length,
+                        current.length - "    ${getWords(globalVerse, gson)[i - 2]}".length,
                         current.length
                     )
                     i-=2
