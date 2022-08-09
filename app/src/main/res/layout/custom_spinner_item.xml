@@ -9,6 +9,6 @@
     android:textStyle="bold"
     android:gravity="center"
     android:background="@color/gray"
-    android:textSize="26sp"
+    android:textSize="20sp"
     >
 </TextView>

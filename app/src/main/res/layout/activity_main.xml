@@ -19,32 +19,29 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/launch"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:layout_marginStart="15dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/ic_launcher"
-            android:contentDescription="Launch"
-            android:elevation="10dp"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:translationZ="55dp" />
-
-        <Button
-            android:id="@+id/aya_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="#292929"
-            android:layout_marginStart="28dp"
-            android:layout_marginEnd="18dp"
-            android:textAlignment="center"
             android:layout_gravity="center"
+            android:layout_marginStart="16dp"
+            android:backgroundTint="#292929"
+            android:fontFamily="@font/uthmanic_hafs"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:text="تطبيق قرآن" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/aya_count"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:backgroundTint="#292929"
             android:fontFamily="@font/uthmanic_hafs"
             android:textColor="@color/white"
-            android:textSize="26sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             tools:text="236" />
 
@@ -65,11 +62,11 @@
         android:layout_height="0dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:padding="16dp"
-        android:breakStrategy="simple"
         android:background="@color/gray"
+        android:breakStrategy="simple"
         android:elevation="10dp"
         android:fontFamily="@font/hafs_smart"
+        android:padding="16dp"
         android:textColor="@color/white"
         android:textSize="35sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -82,14 +79,14 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/ll_background"
+        android:background="#000000"
         android:elevation="20dp"
-        android:padding="12dp"
         android:gravity="center"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        android:padding="12dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
 
         <ImageButton
             android:id="@+id/next_aya"
@@ -121,24 +118,21 @@
             android:id="@+id/previous_aya"
             android:layout_width="32dp"
             android:layout_height="32dp"
+            android:layout_marginStart="8dp"
             android:background="@drawable/ic_previous"
             android:backgroundTint="@color/silver"
             android:contentDescription="Previous"
             android:elevation="10dp"
-            android:layout_marginStart="8dp"
             android:gravity="center"
             android:padding="6dp"
             android:scaleType="centerCrop"
             android:translationZ="32dp" />
 
 
-
         <ImageButton
             android:id="@+id/undo"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:translationZ="55dp"
-            android:padding="6dp"
             android:layout_marginStart="15dp"
             android:layout_marginEnd="7dp"
             android:background="@drawable/ic_undo"
@@ -146,10 +140,11 @@
             android:contentDescription="Undo"
             android:elevation="10dp"
             android:gravity="center"
-            android:scaleType="centerCrop" />
+            android:padding="6dp"
+            android:scaleType="centerCrop"
+            android:translationZ="55dp" />
 
     </LinearLayout>
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

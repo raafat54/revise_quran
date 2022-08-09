@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.slider.Slider
 import com.google.gson.Gson
 import com.raafat.revise.data.AyaList
@@ -26,7 +27,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var previous: ImageButton
     private lateinit var next: ImageButton
     private lateinit var undo: ImageButton
-    private lateinit var launch: ImageButton
+    private lateinit var launch: MaterialButton
 
 
 
