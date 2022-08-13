@@ -4,9 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.graphics.Color
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -15,6 +18,7 @@ import com.google.android.material.slider.Slider
 import com.google.gson.Gson
 import com.raafat.revise.data.AyaList
 import kotlinx.coroutines.runBlocking
+import java.lang.Math.abs
 import java.util.*
 
 
@@ -48,6 +52,7 @@ class MainActivity : AppCompatActivity() {
         previous = findViewById(R.id.previous_aya)
         next = findViewById(R.id.next_aya)
         undo = findViewById(R.id.undo)
+        val containerUndo = findViewById<LinearLayout>(R.id.ll_undo)
         launch = findViewById(R.id.launch)
 
         val stack = Stack<String>()
@@ -120,7 +125,7 @@ class MainActivity : AppCompatActivity() {
                         sura = position + 1
                         i = 0
                         current.clear()
-
+                        stack.clear()
 
                         slider.value = 1f
                         ayaCount.text = "${slider.value.toInt()}"
@@ -139,6 +144,7 @@ class MainActivity : AppCompatActivity() {
                         sura = position + 1
                         i = 0
                         current.clear()
+                        stack.clear()
 
 
                         textView.text = getWords(globalVerse, gson).joinToString(" ")
@@ -209,16 +215,61 @@ class MainActivity : AppCompatActivity() {
         currentSura = gson[globalVerse].sora
 
 
-        textView.setOnClickListener {
+        fun undoClicked(){
+            if (i > 0 && current.isNotEmpty()) {
+
+                if (i == getWords(globalVerse, gson).size) {
+                    current.delete(
+                        current.length - "    ${getWords(globalVerse, gson)[i - 2]}".length,
+                        current.length
+                    )
+                    i-=2
+                }
+                else {
+
+                    current.delete(
+                        current.length - " ${getWords(globalVerse, gson)[i - 1]}".length,
+                        current.length
+                    )
+                    i--
+                }
+
+                textView.text = current.toString()
+
+
+                if (i > 0 && current.length < 2)
+                    textView.text = current.clear().append(stack.pop())
+
+            }
+
+
+            if (i == 0 && stack.isNotEmpty()){
+                globalVerse--
+                i = getWords(globalVerse, gson).size
+                textView.text = current.clear().append(stack.pop())
+                slider.value = gson[globalVerse].ayaNo.toFloat()
+                ayaCount.text = "${slider.value.toInt()}"
+            }
+
+            if (i == 0 && current.isEmpty()){
+                textView.text = getWords(globalVerse, gson).joinToString(" ")
+                textView.setTextColor(Color.GRAY)
+                textView.maxLines = 1
+
+
+            }
+        }
+
+        fun textViewClicked(){
 
             undo.isClickable = true
 
-            textView.maxLines = 10
+            textView.maxLines = 50
             textView.setTextColor(Color.WHITE)
 
             if (i <= getWords(globalVerse, gson).size - 2) {
                 if (i == getWords(globalVerse, gson).size - 2) {
-                    textView.text = current.append(getWords(globalVerse, gson)[i++]).append(" ")
+                    textView.text = current.append(getWords(globalVerse, gson)[i++]).append("\u00A0")
                         .append(getWords(globalVerse, gson)[i++]).append(" ")
 
 
@@ -264,7 +315,10 @@ class MainActivity : AppCompatActivity() {
                         current.clear().append(getWords(globalVerse, gson)[i - 1]).append(" ")
                 }
             }
+        }
 
+        textView.setOnClickListener {
+            textViewClicked()
         }
 
         previous.setOnClickListener {
@@ -272,19 +326,19 @@ class MainActivity : AppCompatActivity() {
             if (globalVerse > 0) {
                 i = 0
 
-                --globalVerse
-                slider.value = gson[globalVerse].ayaNo.toFloat()
-                ayaCount.text = "${slider.value.toInt()}"
+                    --globalVerse
+                    slider.value = gson[globalVerse].ayaNo.toFloat()
+                    ayaCount.text = "${slider.value.toInt()}"
 
-                if (currentSura != gson[globalVerse].sora) {
-                    spinner.setSelection(currentSura - 2, true)
-                    slider.valueTo = numberOfAyahsForSuraArray[gson[globalVerse].sora - 1].toFloat()
-                    clicked = false
+                    if (currentSura != gson[globalVerse].sora) {
+                        spinner.setSelection(currentSura - 2, true)
+                        slider.valueTo = numberOfAyahsForSuraArray[gson[globalVerse].sora - 1].toFloat()
+                        clicked = false
+                        current.clear()
+                        currentSura = gson[globalVerse].sora
+                    }
                     current.clear()
-                    currentSura = gson[globalVerse].sora
-                }
-                current.clear()
-                stack.clear()
+                    stack.clear()
 
                 textView.text = getWords(globalVerse, gson).joinToString(" ")
                 textView.setTextColor(Color.GRAY)
@@ -297,18 +351,18 @@ class MainActivity : AppCompatActivity() {
             if (globalVerse != 6235) {
                 i = 0
 
-                ++globalVerse
-                slider.value = gson[globalVerse].ayaNo.toFloat()
-                ayaCount.text = "${slider.value.toInt()}"
+                    ++globalVerse
+                    slider.value = gson[globalVerse].ayaNo.toFloat()
+                    ayaCount.text = "${slider.value.toInt()}"
 
-                if (currentSura != gson[globalVerse].sora) {
-                    spinner.setSelection(currentSura, true)
-                    clicked = false
+                    if (currentSura != gson[globalVerse].sora) {
+                        spinner.setSelection(currentSura, true)
+                        clicked = false
+                        current.clear()
+                        currentSura = gson[globalVerse].sora
+                    }
                     current.clear()
-                    currentSura = gson[globalVerse].sora
-                }
-                current.clear()
-                stack.clear()
+                    stack.clear()
 
                 textView.text = getWords(globalVerse, gson).joinToString(" ")
                 textView.setTextColor(Color.GRAY)
@@ -316,89 +370,30 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        containerUndo.setOnLongClickListener(object : OnContinuousClickListener(200) {
+            override fun onContinuousClick(v: View?) {
+                undoClicked()
+            }
+
+        })
+
+        containerUndo.setOnClickListener {
+            undoClicked()
+        }
 
         undo.setOnLongClickListener(object : OnContinuousClickListener(200) {
             override fun onContinuousClick(v: View?) {
-                if (i > 0 && current.isNotEmpty()) {
-
-                    if (i == getWords(globalVerse, gson).size) {
-                        current.delete(
-                            current.length - "    ${getWords(globalVerse, gson)[i - 2]}".length,
-                            current.length
-                        )
-                        i-=2
-                    }
-                    else {
-
-                        current.delete(
-                            current.length - " ${getWords(globalVerse, gson)[i - 1]}".length,
-                            current.length
-                        )
-                        i--
-                    }
-
-                    textView.text = current.toString()
-
-
-                    if (i > 0 && current.length < 2)
-                        textView.text = current.clear().append(stack.pop())
-
-                }
-
-
-                if (i == 0 && stack.isNotEmpty()){
-                    globalVerse--
-                    i = getWords(globalVerse, gson).size
-                    textView.text = current.clear().append(stack.pop())
-                    slider.value = gson[globalVerse].ayaNo.toFloat()
-                    ayaCount.text = "${slider.value.toInt()}"
-                }
+                undoClicked()
             }
 
         })
 
         undo.setOnClickListener {
-
-            if (i > 0 && current.isNotEmpty()) {
-
-                if (i == getWords(globalVerse, gson).size) {
-                    current.delete(
-                        current.length - "    ${getWords(globalVerse, gson)[i - 2]}".length,
-                        current.length
-                    )
-                    i-=2
-                }
-                else {
-
-                    current.delete(
-                        current.length - " ${getWords(globalVerse, gson)[i - 1]}".length,
-                        current.length
-                    )
-                    i--
-                }
-
-                textView.text = current.toString()
-
-
-                if (i > 0 && current.length < 2)
-                    textView.text = current.clear().append(stack.pop())
-
-            }
-
-
-            if (i == 0 && stack.isNotEmpty()){
-                globalVerse--
-                i = getWords(globalVerse, gson).size
-                textView.text = current.clear().append(stack.pop())
-                slider.value = gson[globalVerse].ayaNo.toFloat()
-                ayaCount.text = "${slider.value.toInt()}"
-            }
-
-
-
+            undoClicked()
         }
 
         ayaCount.setOnClickListener {
+
             i = 0
             current.clear()
             textView.text = getWords(globalVerse, gson).joinToString(" ")

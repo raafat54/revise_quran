@@ -76,6 +76,34 @@
         app:layout_constraintVertical_bias="0.5" />
 
     <LinearLayout
+        android:id="@+id/ll_undo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="15dp"
+        android:translationZ="55dp"
+        android:background="@drawable/ll_undo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/container"
+        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0">
+        <ImageButton
+            android:id="@+id/undo"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_marginEnd="7dp"
+            android:background="@drawable/ic_undo"
+            android:backgroundTint="@color/silver"
+            android:contentDescription="Undo"
+            android:elevation="10dp"
+            android:gravity="center"
+            android:padding="6dp"
+            android:scaleType="centerCrop"
+            android:translationZ="55dp" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -90,14 +118,12 @@
 
         <ImageButton
             android:id="@+id/next_aya"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="@drawable/ic_next"
-            android:backgroundTint="@color/silver"
             android:contentDescription="Next"
             android:elevation="10dp"
             android:gravity="center"
-            android:padding="6dp"
             android:scaleType="centerCrop"
             android:translationZ="32dp" />
 
@@ -116,33 +142,14 @@
 
         <ImageButton
             android:id="@+id/previous_aya"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginStart="8dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="@drawable/ic_previous"
-            android:backgroundTint="@color/silver"
             android:contentDescription="Previous"
             android:elevation="10dp"
             android:gravity="center"
-            android:padding="6dp"
             android:scaleType="centerCrop"
             android:translationZ="32dp" />
-
-
-        <ImageButton
-            android:id="@+id/undo"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginStart="15dp"
-            android:layout_marginEnd="7dp"
-            android:background="@drawable/ic_undo"
-            android:backgroundTint="@color/silver"
-            android:contentDescription="Undo"
-            android:elevation="10dp"
-            android:gravity="center"
-            android:padding="6dp"
-            android:scaleType="centerCrop"
-            android:translationZ="55dp" />
 
     </LinearLayout>
 
