@@ -13,18 +13,29 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:gravity="center"
         android:orientation="horizontal"
-        android:paddingTop="8dp"
+        android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/menu"
+            android:src="@drawable/ic_menu"
+            android:layout_gravity="center"
+            android:layout_marginStart="8dp"
+            android:contentDescription="menu"
+            android:backgroundTint="@color/gray"
+            android:layout_width="25dp"
+            android:layout_height="25dp"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/launch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="8dp"
             android:backgroundTint="#292929"
             android:fontFamily="@font/uthmanic_hafs"
             android:textAlignment="center"
@@ -33,12 +44,14 @@
             android:textStyle="bold"
             android:text="تطبيق قرآن" />
 
-        <com.google.android.material.button.MaterialButton
+        <TextView
             android:id="@+id/aya_count"
-            android:layout_width="70dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:backgroundTint="#292929"
+            android:layout_marginStart="16dp"
+            android:layout_gravity="center"
+            android:gravity="center"
             android:fontFamily="@font/uthmanic_hafs"
             android:textColor="@color/white"
             android:textSize="20sp"
@@ -47,8 +60,10 @@
 
         <Spinner
             android:id="@+id/sura_spinner"
-            android:layout_width="match_parent"
+            android:layout_width="100dp"
+            android:layout_marginEnd="8dp"
             android:layout_height="wrap_content"
+            android:background="@null"
             android:layout_gravity="center"
             android:backgroundTint="@color/white"
             android:dropDownWidth="200dp"

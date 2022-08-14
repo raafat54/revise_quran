@@ -4,12 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.content.res.Resources
 import android.graphics.Color
-import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -18,7 +16,8 @@ import com.google.android.material.slider.Slider
 import com.google.gson.Gson
 import com.raafat.revise.data.AyaList
 import kotlinx.coroutines.runBlocking
-import java.lang.Math.abs
+import smartdevelop.ir.eram.showcaseviewlib.GuideView
+import smartdevelop.ir.eram.showcaseviewlib.config.DismissType
 import java.util.*
 
 
@@ -31,8 +30,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var previous: ImageButton
     private lateinit var next: ImageButton
     private lateinit var undo: ImageButton
+    private lateinit var ayaCount: TextView
     private lateinit var launch: MaterialButton
-
+    private lateinit var menu: ImageButton
 
 
     private lateinit var gson: AyaList
@@ -47,8 +47,8 @@ class MainActivity : AppCompatActivity() {
         val savedSura = getSharedPrefs.getInt("spinner", 0)
         val savedAya = getSharedPrefs.getFloat("slider", 1f)
 
-        val ayaCount = findViewById<Button>(R.id.aya_count)
-
+        ayaCount = findViewById(R.id.aya_count)
+        menu = findViewById(R.id.menu)
         previous = findViewById(R.id.previous_aya)
         next = findViewById(R.id.next_aya)
         undo = findViewById(R.id.undo)
@@ -57,10 +57,22 @@ class MainActivity : AppCompatActivity() {
 
         val stack = Stack<String>()
 
+        val firstRun =
+            getSharedPreferences("preferences", MODE_PRIVATE).getBoolean("firstrun", true)
+        if (firstRun) {
+            getSharedPreferences("preferences", MODE_PRIVATE).edit().putBoolean("firstrun", false)
+                .apply()
 
+            tutorial()
+        }
 
         spinner = findViewById(R.id.sura_spinner)
         slider = findViewById(R.id.slider)
+
+
+        menu.setOnClickListener {
+            showPopupMenu(menu)
+        }
 
 
         val numberOfAyahsForSuraArray = intArrayOf(
@@ -105,7 +117,7 @@ class MainActivity : AppCompatActivity() {
         var clicked = spinner.selectedItemPosition != savedSura
         var verse = savedAya.toInt()
         slider.value = verse.toFloat()
-        ayaCount.text = "${slider.value.toInt()}"
+        ayaCount.text = "الآية   ".plus("${slider.value.toInt()}")
 
 
         slider.valueTo = numberOfAyahsForSuraArray[sura].toFloat()
@@ -128,7 +140,7 @@ class MainActivity : AppCompatActivity() {
                         stack.clear()
 
                         slider.value = 1f
-                        ayaCount.text = "${slider.value.toInt()}"
+                        ayaCount.text = "الآية   ".plus("${slider.value.toInt()}")
                         globalVerse =
                             ((gson.filter { Sura -> Sura.sora == sura }).filter { Aya -> Aya.ayaNo == 1 })[0].id - 1
 
@@ -167,7 +179,7 @@ class MainActivity : AppCompatActivity() {
         slider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
             override fun onStartTrackingTouch(slider: Slider) {
                 verse = slider.value.toInt()
-                ayaCount.text = "${slider.value.toInt()}"
+                ayaCount.text = "الآية   ".plus("${slider.value.toInt()}")
 
                 globalVerse =
                     ((gson.filter { Sura -> Sura.sora == sura }).filter { Aya -> Aya.ayaNo == verse })[0].id - 1
@@ -184,7 +196,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onStopTrackingTouch(slider: Slider) {
                 verse = slider.value.toInt()
-                ayaCount.text = "${slider.value.toInt()}"
+                ayaCount.text = "الآية   ".plus("${slider.value.toInt()}")
 
                 globalVerse =
                     ((gson.filter { Sura -> Sura.sora == sura }).filter { Aya -> Aya.ayaNo == verse })[0].id - 1
@@ -206,7 +218,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         slider.addOnChangeListener { slider, _, _ ->
-            ayaCount.text = "${slider.value.toInt()}"
+            ayaCount.text = "الآية   ".plus("${slider.value.toInt()}")
 
 
         }
@@ -248,7 +260,7 @@ class MainActivity : AppCompatActivity() {
                 i = getWords(globalVerse, gson).size
                 textView.text = current.clear().append(stack.pop())
                 slider.value = gson[globalVerse].ayaNo.toFloat()
-                ayaCount.text = "${slider.value.toInt()}"
+                ayaCount.text = "الآية   ".plus("${slider.value.toInt()}")
             }
 
             if (i == 0 && current.isEmpty()){
@@ -283,7 +295,7 @@ class MainActivity : AppCompatActivity() {
                     stack.push(current.toString())
 
                     slider.value = gson[globalVerse].ayaNo.toFloat()
-                    ayaCount.text = "${slider.value.toInt()}"
+                    ayaCount.text = "الآية   ".plus("${slider.value.toInt()}")
                     if (currentSura != gson[globalVerse].sora) {
                         spinner.setSelection(currentSura, true)
                         current.clear()
@@ -323,26 +335,39 @@ class MainActivity : AppCompatActivity() {
 
         previous.setOnClickListener {
 
-            if (globalVerse > 0) {
-                i = 0
+            if(i == 0 && current.isEmpty()){
+                if (globalVerse > 0) {
+                    i = 0
 
-                    --globalVerse
-                    slider.value = gson[globalVerse].ayaNo.toFloat()
-                    ayaCount.text = "${slider.value.toInt()}"
+                        --globalVerse
+                        slider.value = gson[globalVerse].ayaNo.toFloat()
+                        ayaCount.text = "الآية   ".plus("${slider.value.toInt()}")
 
-                    if (currentSura != gson[globalVerse].sora) {
-                        spinner.setSelection(currentSura - 2, true)
-                        slider.valueTo = numberOfAyahsForSuraArray[gson[globalVerse].sora - 1].toFloat()
-                        clicked = false
+                        if (currentSura != gson[globalVerse].sora) {
+                            spinner.setSelection(currentSura - 2, true)
+                            slider.valueTo = numberOfAyahsForSuraArray[gson[globalVerse].sora - 1].toFloat()
+                            clicked = false
+                            current.clear()
+                            currentSura = gson[globalVerse].sora
+                        }
                         current.clear()
-                        currentSura = gson[globalVerse].sora
-                    }
-                    current.clear()
-                    stack.clear()
+                        stack.clear()
 
-                textView.text = getWords(globalVerse, gson).joinToString(" ")
-                textView.setTextColor(Color.GRAY)
-                textView.maxLines = 1
+                    textView.text = getWords(globalVerse, gson).joinToString(" ")
+                    textView.setTextColor(Color.GRAY)
+                    textView.maxLines = 1
+                }
+            }
+
+            if(i > 0 && i <= getWords(globalVerse, gson).size - 2) {
+                for (j in i downTo 1)  {
+                    undoClicked()
+                }
+            }
+            else {
+                for (j in i downTo 2)  {
+                    undoClicked()
+                }
             }
         }
 
@@ -353,7 +378,7 @@ class MainActivity : AppCompatActivity() {
 
                     ++globalVerse
                     slider.value = gson[globalVerse].ayaNo.toFloat()
-                    ayaCount.text = "${slider.value.toInt()}"
+                    ayaCount.text = "الآية   ".plus("${slider.value.toInt()}")
 
                     if (currentSura != gson[globalVerse].sora) {
                         spinner.setSelection(currentSura, true)
@@ -392,16 +417,6 @@ class MainActivity : AppCompatActivity() {
             undoClicked()
         }
 
-        ayaCount.setOnClickListener {
-
-            i = 0
-            current.clear()
-            textView.text = getWords(globalVerse, gson).joinToString(" ")
-            textView.setTextColor(Color.GRAY)
-            textView.maxLines = 1
-            stack.clear()
-        }
-
         launch.setOnClickListener {
             val appisFound = isAppInstalled(this, "com.quran.labs.androidquran")
             if(appisFound)
@@ -413,11 +428,71 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun tutorial() {
+        GuideView.Builder(this)
+            .setContentText("فتح الآية فى تطبيق قرآن أندرويد")
+            .setDismissType(DismissType.anywhere) //optional - default DismissType.targetView
+            .setTargetView(launch)
+            .setContentTextSize(12) //optional
+            .setTitleTextSize(14) //optional
+            .setGuideListener {
+                GuideView.Builder(this)
+                    .setContentText("إمكانية الرجوع بالكلمة عن طريق زر علامة السالب \n" +
+                            "مع إمكانية الضغط المستمر لأكثر من كلمة \n")
+                    .setDismissType(DismissType.anywhere) //optional - default DismissType.targetView
+                    .setTargetView(undo)
+                    .setContentTextSize(12) //optional
+                    .setTitleTextSize(14) //optional
+                    .setGuideListener {
+                        GuideView.Builder(this)
+                        .setContentText("الرجوع للآية السابقة")
+                        .setDismissType(DismissType.anywhere) //optional - default DismissType.targetView
+                        .setTargetView(previous)
+                        .setContentTextSize(12) //optional
+                        .setTitleTextSize(14) //optional
+                        .setGuideListener {
+                            GuideView.Builder(this)
+                                .setContentText("بداية التسميع من الآية التالية")
+                                .setDismissType(DismissType.anywhere) //optional - default DismissType.targetView
+                                .setTargetView(next)
+                                .setContentTextSize(12) //optional
+                                .setTitleTextSize(14) //optional
+                                .setGuideListener {
+                                    GuideView.Builder(this)
+                                        .setContentText("اختيار السورة")
+                                        .setDismissType(DismissType.anywhere) //optional - default DismissType.targetView
+                                        .setTargetView(spinner)
+                                        .setContentTextSize(12) //optional
+                                        .setTitleTextSize(14) //optional
+                                        .setGuideListener {
+                                            GuideView.Builder(this)
+                                                .setContentText("اختيار الآية")
+                                                .setDismissType(DismissType.anywhere) //optional - default DismissType.targetView
+                                                .setTargetView(slider)
+                                                .setContentTextSize(12) //optional
+                                                .setTitleTextSize(14) //optional
+                                                .build()
+                                                .show()
+                                        }
+                                        .build()
+                                        .show()
+                                }
+                                .build()
+                                .show()
+                        }
+                        .build()
+                        .show()
+                    }
+                    .build()
+                    .show()
+            }
+            .build()
+            .show()
+    }
 
     private fun getWords(verse: Int, ayaList: AyaList): Array<String> {
         return ayaList[verse].ayaText.split(" ").toTypedArray()
     }
-
 
     override fun onPause() {
         super.onPause()
@@ -434,7 +509,7 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    fun isAppInstalled(context: Context, packageName: String?): Boolean {
+    private fun isAppInstalled(context: Context, packageName: String?): Boolean {
         return try {
             if (packageName != null) {
                 context.packageManager.getApplicationInfo(packageName, 0)
@@ -445,7 +520,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
+    private fun showPopupMenu(view: View) = PopupMenu(view.context, view).run {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        setOnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.tutorial -> {
+                    tutorial()
+                    true
+                }
+                else -> {
+                    true
+                }
+            }
+        }
+        show()
+    }
 
 
 }
