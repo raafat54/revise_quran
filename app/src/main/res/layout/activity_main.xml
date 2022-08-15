@@ -13,9 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:gravity="fill_horizontal"
+        android:gravity="center"
         android:orientation="horizontal"
-        android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -27,7 +26,7 @@
             android:layout_marginStart="8dp"
             android:contentDescription="menu"
             android:backgroundTint="@color/gray"
-            android:layout_width="25dp"
+            android:layout_width="50dp"
             android:layout_height="25dp"/>
 
         <com.google.android.material.button.MaterialButton
@@ -60,8 +59,9 @@
 
         <Spinner
             android:id="@+id/sura_spinner"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_marginEnd="8dp"
+            android:layout_marginStart="25dp"
             android:layout_height="wrap_content"
             android:background="@null"
             android:layout_gravity="center"
@@ -90,62 +90,45 @@
         app:layout_constraintTop_toBottomOf="@+id/container"
         app:layout_constraintVertical_bias="0.5" />
 
-    <LinearLayout
-        android:id="@+id/ll_undo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="15dp"
-        android:translationZ="55dp"
-        android:background="@drawable/ll_undo"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/container"
-        app:layout_constraintVertical_bias="1.0"
-        app:layout_constraintHorizontal_bias="0.0">
-        <ImageButton
-            android:id="@+id/undo"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_marginEnd="7dp"
-            android:background="@drawable/ic_undo"
-            android:backgroundTint="@color/silver"
-            android:contentDescription="Undo"
-            android:elevation="10dp"
-            android:gravity="center"
-            android:padding="6dp"
-            android:scaleType="centerCrop"
-            android:translationZ="55dp" />
-    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
         android:background="#000000"
         android:elevation="20dp"
         android:gravity="center"
         android:orientation="horizontal"
-        android:padding="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout">
 
+        <LinearLayout
+            android:id="@+id/ll_next_aya"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="15dp">
         <ImageButton
             android:id="@+id/next_aya"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:paddingEnd="25dp"
             android:background="@drawable/ic_next"
             android:contentDescription="Next"
             android:elevation="10dp"
             android:gravity="center"
             android:scaleType="centerCrop"
             android:translationZ="32dp" />
+        </LinearLayout>
 
         <com.google.android.material.slider.Slider
             android:id="@+id/slider"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:layout_weight="1"
             android:layoutDirection="rtl"
             android:stepSize="1"
@@ -155,16 +138,25 @@
             app:labelBehavior="floating"
             tools:valueTo="7" />
 
+    <LinearLayout
+        android:id="@+id/ll_previous_aya"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingEnd="15dp">
         <ImageButton
             android:id="@+id/previous_aya"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:paddingEnd="25dp"
             android:background="@drawable/ic_previous"
             android:contentDescription="Previous"
             android:elevation="10dp"
             android:gravity="center"
             android:scaleType="centerCrop"
             android:translationZ="32dp" />
+    </LinearLayout>
+
+
 
     </LinearLayout>
 

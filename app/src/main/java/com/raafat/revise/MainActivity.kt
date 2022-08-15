@@ -3,10 +3,15 @@ package com.raafat.revise
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -15,8 +20,6 @@ import com.google.android.material.slider.Slider
 import com.google.gson.Gson
 import com.raafat.revise.data.AyaList
 import kotlinx.coroutines.runBlocking
-import smartdevelop.ir.eram.showcaseviewlib.GuideView
-import smartdevelop.ir.eram.showcaseviewlib.config.DismissType
 import java.util.*
 
 
@@ -28,14 +31,17 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var previous: ImageButton
     private lateinit var next: ImageButton
-    private lateinit var undo: ImageButton
     private lateinit var ayaCount: TextView
     private lateinit var launch: MaterialButton
     private lateinit var menu: ImageButton
 
-
     private lateinit var gson: AyaList
     private var currentSura = 0
+
+    val stack = Stack<String>()
+    var i = 0
+    val current = StringBuilder()
+    var globalVerse = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,20 +56,10 @@ class MainActivity : AppCompatActivity() {
         menu = findViewById(R.id.menu)
         previous = findViewById(R.id.previous_aya)
         next = findViewById(R.id.next_aya)
-        undo = findViewById(R.id.undo)
-        val containerUndo = findViewById<LinearLayout>(R.id.ll_undo)
         launch = findViewById(R.id.launch)
+        val ll_previous = findViewById<LinearLayout>(R.id.ll_previous_aya)
+        val ll_next = findViewById<LinearLayout>(R.id.ll_next_aya)
 
-        val stack = Stack<String>()
-
-        val firstRun =
-            getSharedPreferences("preferences", MODE_PRIVATE).getBoolean("firstrun", true)
-        if (firstRun) {
-            getSharedPreferences("preferences", MODE_PRIVATE).edit().putBoolean("firstrun", false)
-                .apply()
-
-            tutorial()
-        }
 
         spinner = findViewById(R.id.sura_spinner)
         slider = findViewById(R.id.slider)
@@ -87,7 +83,6 @@ class MainActivity : AppCompatActivity() {
 
         textView = findViewById(R.id.quran_content_tv)
 
-        val current = StringBuilder()
 
         var json: String
 
@@ -98,7 +93,6 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        var i = 0
 
 
         gson = Gson().fromJson(json, AyaList::class.java)
@@ -120,9 +114,8 @@ class MainActivity : AppCompatActivity() {
 
 
         slider.valueTo = numberOfAyahsForSuraArray[sura].toFloat()
-        var globalVerse =
+        globalVerse =
             ((gson.filter { Sura -> Sura.sora == sura + 1 }).filter { Aya -> Aya.ayaNo == verse })[0].id - 1
-
 
 
         spinner.onItemSelectedListener = object :
@@ -273,8 +266,6 @@ class MainActivity : AppCompatActivity() {
 
         fun textViewClicked(){
 
-            undo.isClickable = true
-
             textView.maxLines = 50
             textView.setTextColor(Color.WHITE)
 
@@ -307,23 +298,45 @@ class MainActivity : AppCompatActivity() {
             }
 
 
+            if(resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                if ((textView.lineCount + 2) * textView.lineHeight > textView.height) {
+                    if (i == getWords(globalVerse, gson).size) {
+                        textView.text = current
+                    } else if (i == 1) {
+                        textView.text =
+                            current.clear().append(getWords(globalVerse, gson)[i - 1]).append(" ")
+                    } else {
+                        stack.push(
+                            current.removeRange(
+                                current.length - " ${getWords(globalVerse, gson)[i - 1]}".length,
+                                current.length
+                            ).toString()
+                        )
 
-            if ((textView.lineCount + 2) * textView.lineHeight  > textView.height) {
-                if (i == getWords(globalVerse, gson).size) {
-                    textView.text = current
-                } else if(i == 1) {
-                    textView.text =
-                        current.clear().append(getWords(globalVerse, gson)[i - 1]).append(" ")
-                } else{
-                    stack.push(
-                        current.removeRange(
-                            current.length - " ${getWords(globalVerse, gson)[i - 1]}".length,
-                            current.length
-                        ).toString()
-                    )
+                        textView.text =
+                            current.clear().append(getWords(globalVerse, gson)[i - 1]).append(" ")
+                    }
+                }
+            }
 
-                    textView.text =
-                        current.clear().append(getWords(globalVerse, gson)[i - 1]).append(" ")
+            if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                if ((textView.lineCount + 1) * textView.lineHeight > textView.height) {
+                    if (i == getWords(globalVerse, gson).size) {
+                        textView.text = current
+                    } else if (i == 1) {
+                        textView.text =
+                            current.clear().append(getWords(globalVerse, gson)[i - 1]).append(" ")
+                    } else {
+                        stack.push(
+                            current.removeRange(
+                                current.length - " ${getWords(globalVerse, gson)[i - 1]}".length,
+                                current.length
+                            ).toString()
+                        )
+
+                        textView.text =
+                            current.clear().append(getWords(globalVerse, gson)[i - 1]).append(" ")
+                    }
                 }
             }
         }
@@ -332,25 +345,34 @@ class MainActivity : AppCompatActivity() {
             textViewClicked()
         }
 
-        previous.setOnClickListener {
+        textView.setOnLongClickListener(object : OnContinuousClickListener(750){
+            override fun onContinuousClick(v: View?) {
+                if (i > 0 && current.isNotEmpty()){
+                    undoClicked()
+                    vibratePhone()
+                }
+            }
 
+        })
+
+        fun previousClicked(){
             if(i == 0 && current.isEmpty()){
                 if (globalVerse > 0) {
                     i = 0
 
-                        --globalVerse
-                        slider.value = gson[globalVerse].ayaNo.toFloat()
-                        ayaCount.text = "الآية   ".plus("${slider.value.toInt()}")
+                    --globalVerse
+                    slider.value = gson[globalVerse].ayaNo.toFloat()
+                    ayaCount.text = "الآية   ".plus("${slider.value.toInt()}")
 
-                        if (currentSura != gson[globalVerse].sora) {
-                            spinner.setSelection(currentSura - 2, true)
-                            slider.valueTo = numberOfAyahsForSuraArray[gson[globalVerse].sora - 1].toFloat()
-                            clicked = false
-                            current.clear()
-                            currentSura = gson[globalVerse].sora
-                        }
+                    if (currentSura != gson[globalVerse].sora) {
+                        spinner.setSelection(currentSura - 2, true)
+                        slider.valueTo = numberOfAyahsForSuraArray[gson[globalVerse].sora - 1].toFloat()
+                        clicked = false
                         current.clear()
-                        stack.clear()
+                        currentSura = gson[globalVerse].sora
+                    }
+                    current.clear()
+                    stack.clear()
 
                     textView.text = getWords(globalVerse, gson).joinToString(" ")
                     textView.setTextColor(Color.GRAY)
@@ -370,51 +392,48 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        next.setOnClickListener {
-
+        fun nextClicked(){
             if (globalVerse != 6235) {
                 i = 0
 
-                    ++globalVerse
-                    slider.value = gson[globalVerse].ayaNo.toFloat()
-                    ayaCount.text = "الآية   ".plus("${slider.value.toInt()}")
+                ++globalVerse
+                slider.value = gson[globalVerse].ayaNo.toFloat()
+                ayaCount.text = "الآية   ".plus("${slider.value.toInt()}")
 
-                    if (currentSura != gson[globalVerse].sora) {
-                        spinner.setSelection(currentSura, true)
-                        clicked = false
-                        current.clear()
-                        currentSura = gson[globalVerse].sora
-                    }
+                if (currentSura != gson[globalVerse].sora) {
+                    spinner.setSelection(currentSura, true)
+                    clicked = false
                     current.clear()
-                    stack.clear()
+                    currentSura = gson[globalVerse].sora
+                }
+                current.clear()
+                stack.clear()
 
                 textView.text = getWords(globalVerse, gson).joinToString(" ")
                 textView.setTextColor(Color.GRAY)
                 textView.maxLines = 1
             }
+
         }
 
-        containerUndo.setOnLongClickListener(object : OnContinuousClickListener(200) {
-            override fun onContinuousClick(v: View?) {
-                undoClicked()
-            }
-
-        })
-
-        containerUndo.setOnClickListener {
-            undoClicked()
+        ll_previous.setOnClickListener {
+            previousClicked()
         }
 
-        undo.setOnLongClickListener(object : OnContinuousClickListener(200) {
-            override fun onContinuousClick(v: View?) {
-                undoClicked()
-            }
-
-        })
-
-        undo.setOnClickListener {
-            undoClicked()
+        previous.setOnClickListener {
+            previousClicked()
         }
+
+        ll_next.setOnClickListener {
+            nextClicked()
+        }
+
+        next.setOnClickListener {
+            nextClicked()
+        }
+
+
+
 
         launch.setOnClickListener {
             val appisFound = isAppInstalled(this, "com.quran.labs.androidquran")
@@ -427,67 +446,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun tutorial() {
-        GuideView.Builder(this)
-            .setContentText("فتح الآية فى تطبيق قرآن أندرويد")
-            .setDismissType(DismissType.anywhere) //optional - default DismissType.targetView
-            .setTargetView(launch)
-            .setContentTextSize(12) //optional
-            .setTitleTextSize(14) //optional
-            .setGuideListener {
-                GuideView.Builder(this)
-                    .setContentText("إمكانية الرجوع بالكلمة عن طريق زر علامة السالب \n" +
-                            "مع إمكانية الضغط المستمر لأكثر من كلمة \n")
-                    .setDismissType(DismissType.anywhere) //optional - default DismissType.targetView
-                    .setTargetView(undo)
-                    .setContentTextSize(12) //optional
-                    .setTitleTextSize(14) //optional
-                    .setGuideListener {
-                        GuideView.Builder(this)
-                        .setContentText("الرجوع للآية السابقة")
-                        .setDismissType(DismissType.anywhere) //optional - default DismissType.targetView
-                        .setTargetView(previous)
-                        .setContentTextSize(12) //optional
-                        .setTitleTextSize(14) //optional
-                        .setGuideListener {
-                            GuideView.Builder(this)
-                                .setContentText("بداية التسميع من الآية التالية")
-                                .setDismissType(DismissType.anywhere) //optional - default DismissType.targetView
-                                .setTargetView(next)
-                                .setContentTextSize(12) //optional
-                                .setTitleTextSize(14) //optional
-                                .setGuideListener {
-                                    GuideView.Builder(this)
-                                        .setContentText("اختيار السورة")
-                                        .setDismissType(DismissType.anywhere) //optional - default DismissType.targetView
-                                        .setTargetView(spinner)
-                                        .setContentTextSize(12) //optional
-                                        .setTitleTextSize(14) //optional
-                                        .setGuideListener {
-                                            GuideView.Builder(this)
-                                                .setContentText("اختيار الآية")
-                                                .setDismissType(DismissType.anywhere) //optional - default DismissType.targetView
-                                                .setTargetView(slider)
-                                                .setContentTextSize(12) //optional
-                                                .setTitleTextSize(14) //optional
-                                                .build()
-                                                .show()
-                                        }
-                                        .build()
-                                        .show()
-                                }
-                                .build()
-                                .show()
-                        }
-                        .build()
-                        .show()
-                    }
-                    .build()
-                    .show()
-            }
-            .build()
-            .show()
-    }
 
     private fun getWords(verse: Int, ayaList: AyaList): Array<String> {
         return ayaList[verse].ayaText.split(" ").toTypedArray()
@@ -498,7 +456,6 @@ class MainActivity : AppCompatActivity() {
         val putSharedPrefs: SharedPreferences = getSharedPreferences(packageName, MODE_PRIVATE)
         putSharedPrefs.edit().putInt("spinner", spinner.selectedItemPosition).apply()
         putSharedPrefs.edit().putFloat("slider", slider.value).apply()
-
     }
 
     private fun startNewActivity(verse: Int) {
@@ -519,12 +476,40 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showPopupMenu(view: View) = PopupMenu(view.context, view).run {
+    fun vibratePhone() {
+        val vibrator = this.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        if (Build.VERSION.SDK_INT >= 26) {
+            vibrator.vibrate(VibrationEffect.createOneShot(20, VibrationEffect.DEFAULT_AMPLITUDE))
+        } else {
+            vibrator.vibrate(20)
+        }
+    }
+
+    private fun showPopupMenu(view: View) = PopupMenu(view.context, view)
+        .run {
         menuInflater.inflate(R.menu.main_menu, menu)
         setOnMenuItemClickListener {
             when(it.itemId) {
-                R.id.tutorial -> {
-                    tutorial()
+                R.id.orientation -> {
+                    if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE){
+                        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                        i = 0
+                        stack.clear()
+                        current.clear()
+                        textView.text = getWords(globalVerse, gson).joinToString(" ")
+                        textView.setTextColor(Color.GRAY)
+                        textView.maxLines = 1
+                    }
+                    if(resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT){
+                        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                        i = 0
+                        stack.clear()
+                        current.clear()
+                        textView.text = getWords(globalVerse, gson).joinToString(" ")
+                        textView.setTextColor(Color.GRAY)
+                        textView.maxLines = 1
+                    }
+
                     true
                 }
                 else -> {
