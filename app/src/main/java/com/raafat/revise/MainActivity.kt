@@ -6,7 +6,9 @@ import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.content.res.Resources
 import android.graphics.Color
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -15,7 +17,9 @@ import android.os.Vibrator
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.button.MaterialButton
+import androidx.core.content.res.ResourcesCompat
+import com.getkeepsafe.taptargetview.TapTarget
+import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.google.android.material.slider.Slider
 import com.google.gson.Gson
 import com.raafat.revise.data.AyaList
@@ -32,7 +36,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var previous: ImageButton
     private lateinit var next: ImageButton
     private lateinit var ayaCount: TextView
-    private lateinit var launch: MaterialButton
     private lateinit var menu: ImageButton
 
     private lateinit var gson: AyaList
@@ -52,11 +55,22 @@ class MainActivity : AppCompatActivity() {
         val savedSura = getSharedPrefs.getInt("spinner", 0)
         val savedAya = getSharedPrefs.getFloat("slider", 1f)
 
+        val PREFS_NAME = "MyPrefsFile"
+
+        val settings = getSharedPreferences(PREFS_NAME, 0)
+
+        if (settings.getBoolean("my_first_time", true)) {
+
+            // first time task
+            showTutorial()
+            // record the fact that the app has been started at least once
+            settings.edit().putBoolean("my_first_time", false).apply()
+        }
+
         ayaCount = findViewById(R.id.aya_count)
         menu = findViewById(R.id.menu)
         previous = findViewById(R.id.previous_aya)
         next = findViewById(R.id.next_aya)
-        launch = findViewById(R.id.launch)
         val ll_previous = findViewById<LinearLayout>(R.id.ll_previous_aya)
         val ll_next = findViewById<LinearLayout>(R.id.ll_next_aya)
 
@@ -432,18 +446,6 @@ class MainActivity : AppCompatActivity() {
             nextClicked()
         }
 
-
-
-
-        launch.setOnClickListener {
-            val appisFound = isAppInstalled(this, "com.quran.labs.androidquran")
-            if(appisFound)
-                startNewActivity(globalVerse)
-            else{
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.quran.labs.androidquran")))
-            }
-
-        }
     }
 
 
@@ -485,6 +487,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun getFont(): Typeface {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) resources.getFont(R.font.uthmanic_hafs)
+        else this.let { ResourcesCompat.getFont(it, R.font.uthmanic_hafs) }!!
+    }
+
     private fun showPopupMenu(view: View) = PopupMenu(view.context, view)
         .run {
         menuInflater.inflate(R.menu.main_menu, menu)
@@ -512,12 +519,115 @@ class MainActivity : AppCompatActivity() {
 
                     true
                 }
+                R.id.launch -> {
+                    val appisFound = isAppInstalled(view.context, "com.quran.labs.androidquran")
+                    if(appisFound)
+                        startNewActivity(globalVerse)
+                    else{
+                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.quran.labs.androidquran")))
+                    }
+                    true
+                }
+                R.id.tutorial -> {
+                    showTutorial()
+                    true
+                }
                 else -> {
                     true
                 }
             }
         }
         show()
+    }
+
+    private fun showTutorial() {
+        TapTargetSequence(this@MainActivity)
+            .targets(
+                TapTarget.forView(findViewById(R.id.sura_spinner), "اختر السورة من القائمة")
+                    .transparentTarget(true)
+                    .textTypeface(getFont())
+                    .titleTextSize(30)
+                    .outerCircleAlpha(0.96f)
+                    .outerCircleColor(R.color.white)
+                    .targetCircleColor(R.color.white)
+                    .textColor(R.color.black)
+                    .dimColor(R.color.black)
+                    .drawShadow(true)
+                    .tintTarget(true)
+                    .targetRadius(65)
+                    .id(1)
+                    .cancelable(false),
+                TapTarget.forView(findViewById(R.id.slider), "اختر الآية")
+                    .transparentTarget(true)
+                    .textTypeface(getFont())
+                    .titleTextSize(30)
+                    .outerCircleAlpha(0.96f)
+                    .outerCircleColor(R.color.white)
+                    .targetCircleColor(R.color.white)
+                    .textColor(R.color.black)
+                    .dimColor(R.color.black)
+                    .drawShadow(true)
+                    .tintTarget(true)
+                    .targetRadius(105)
+                    .id(2)
+                    .cancelable(false),
+                TapTarget.forView(findViewById(R.id.previous_aya), "الرجوع للآية السابقة")
+                    .transparentTarget(true)
+                    .textTypeface(getFont())
+                    .titleTextSize(30)
+                    .outerCircleAlpha(0.96f)
+                    .outerCircleColor(R.color.white)
+                    .targetCircleColor(R.color.white)
+                    .textColor(R.color.black)
+                    .dimColor(R.color.black)
+                    .drawShadow(true)
+                    .tintTarget(true)
+                    .id(3)
+                    .cancelable(false),
+                TapTarget.forView(findViewById(R.id.next_aya), "بداية التسميع من الآية التالية")
+                    .transparentTarget(true)
+                    .textTypeface(getFont())
+                    .titleTextSize(30)
+                    .outerCircleAlpha(0.96f)
+                    .outerCircleColor(R.color.white)
+                    .targetCircleColor(R.color.white)
+                    .textColor(R.color.black)
+                    .dimColor(R.color.black)
+                    .drawShadow(true)
+                    .tintTarget(true)
+                    .id(4)
+                    .cancelable(false),
+                TapTarget.forView(findViewById(R.id.slider), "نقر على الشاشة لإظهار الكلمة")
+                    .transparentTarget(true)
+                    .textTypeface(getFont())
+                    .titleTextSize(30)
+                    .outerCircleAlpha(0.96f)
+                    .outerCircleColor(R.color.white)
+                    .targetCircleColor(R.color.white)
+                    .textColor(R.color.black)
+                    .dimColor(R.color.black)
+                    .drawShadow(true)
+                    .tintTarget(true)
+                    .targetRadius(Resources.getSystem().displayMetrics.heightPixels / 5)
+                    .id(5)
+                    .cancelable(false),
+                TapTarget.forView(findViewById(R.id.slider), "نقر مستمر للرجوع للكلمات السابقة")
+                    .transparentTarget(true)
+                    .textTypeface(getFont())
+                    .titleTextSize(30)
+                    .outerCircleAlpha(0.96f)
+                    .outerCircleColor(R.color.white)
+                    .targetCircleColor(R.color.white)
+                    .textColor(R.color.black)
+                    .dimColor(R.color.black)
+                    .drawShadow(true)
+                    .tintTarget(true)
+                    .targetRadius(Resources.getSystem().displayMetrics.heightPixels / 5)
+                    .id(6)
+                    .cancelable(false)
+
+            )
+            .start()
     }
 
 

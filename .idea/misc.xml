@@ -20,14 +20,23 @@
         <entry key="..\:/Users/raafa/AndroidStudioProjects/Revise/app/src/main/res/layout/dropdown_item.xml" value="0.13043478260869565" />
         <entry key="..\:/Users/raafa/AndroidStudioProjects/revise_quran/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.15" />
         <entry key="..\:/Users/raafa/AndroidStudioProjects/revise_quran/app/src/main/res/drawable-v24/ll_background.xml" value="0.15" />
+        <entry key="..\:/Users/raafa/AndroidStudioProjects/revise_quran/app/src/main/res/drawable/border.xml" value="0.147" />
         <entry key="..\:/Users/raafa/AndroidStudioProjects/revise_quran/app/src/main/res/drawable/ic_launcher_background.xml" value="0.15" />
         <entry key="..\:/Users/raafa/AndroidStudioProjects/revise_quran/app/src/main/res/drawable/ic_menu.xml" value="0.147" />
         <entry key="..\:/Users/raafa/AndroidStudioProjects/revise_quran/app/src/main/res/drawable/ic_next.xml" value="0.15" />
         <entry key="..\:/Users/raafa/AndroidStudioProjects/revise_quran/app/src/main/res/drawable/ic_previous.xml" value="0.15" />
         <entry key="..\:/Users/raafa/AndroidStudioProjects/revise_quran/app/src/main/res/drawable/ll_undo.xml" value="0.15" />
-        <entry key="..\:/Users/raafa/AndroidStudioProjects/revise_quran/app/src/main/res/layout/activity_main.xml" value="0.4466666666666667" />
+        <entry key="..\:/Users/raafa/AndroidStudioProjects/revise_quran/app/src/main/res/drawable/view_top_bottom_border.xml" value="0.14666666666666667" />
+        <entry key="..\:/Users/raafa/AndroidStudioProjects/revise_quran/app/src/main/res/layout-land/activity_main.xml" value="0.12" />
+        <entry key="..\:/Users/raafa/AndroidStudioProjects/revise_quran/app/src/main/res/layout-sw600dp/activity_main.xml" value="0.16666666666666666" />
+        <entry key="..\:/Users/raafa/AndroidStudioProjects/revise_quran/app/src/main/res/layout-sw600dp/custom_spinner_item.xml" value="0.1" />
+        <entry key="..\:/Users/raafa/AndroidStudioProjects/revise_quran/app/src/main/res/layout/activity_main.xml" value="0.12380952380952381" />
         <entry key="..\:/Users/raafa/AndroidStudioProjects/revise_quran/app/src/main/res/layout/custom_spinner_item.xml" value="0.12545289855072464" />
+        <entry key="..\:/Users/raafa/AndroidStudioProjects/revise_quran/app/src/main/res/layout/fragment_demo_sheet.xml" value="0.1" />
+        <entry key="..\:/Users/raafa/AndroidStudioProjects/revise_quran/app/src/main/res/layout/fragment_swipe_page.xml" value="0.1" />
+        <entry key="..\:/Users/raafa/AndroidStudioProjects/revise_quran/app/src/main/res/layout/number_picker.xml" value="0.1" />
         <entry key="..\:/Users/raafa/AndroidStudioProjects/revise_quran/app/src/main/res/menu/main_menu.xml" value="0.130859375" />
+        <entry key="..\:/Users/raafa/AndroidStudioProjects/revise_quran/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.147" />
       </map>
     </option>
   </component>

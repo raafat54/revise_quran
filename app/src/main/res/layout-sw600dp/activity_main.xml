@@ -14,7 +14,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:background="@color/black"
-        android:paddingTop="5dp"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -45,7 +46,7 @@
             android:layout_weight="5"
             android:fontFamily="@font/uthmanic_hafs"
             android:textColor="@color/white"
-            android:textSize="20sp"
+            android:textSize="24sp"
             android:textStyle="bold"
             tools:text="  الآية   236" />
 
@@ -88,8 +89,8 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
+        android:paddingTop="15dp"
+        android:paddingBottom="30dp"
         android:background="#000000"
         android:elevation="20dp"
         android:gravity="center"
@@ -103,17 +104,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingStart="15dp">
-        <ImageButton
-            android:id="@+id/next_aya"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:paddingEnd="25dp"
-            android:background="@drawable/ic_next"
-            android:contentDescription="Next"
-            android:elevation="10dp"
-            android:gravity="center"
-            android:scaleType="centerCrop"
-            android:translationZ="32dp" />
+            <ImageButton
+                android:id="@+id/next_aya"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:paddingEnd="25dp"
+                android:background="@drawable/ic_next"
+                android:contentDescription="Next"
+                android:elevation="10dp"
+                android:gravity="center"
+                android:scaleType="centerCrop"
+                android:translationZ="32dp" />
         </LinearLayout>
 
         <com.google.android.material.slider.Slider
@@ -131,23 +132,23 @@
             app:labelBehavior="gone"
             tools:valueTo="7" />
 
-    <LinearLayout
-        android:id="@+id/ll_previous_aya"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingEnd="15dp">
-        <ImageButton
-            android:id="@+id/previous_aya"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:paddingEnd="25dp"
-            android:background="@drawable/ic_previous"
-            android:contentDescription="Previous"
-            android:elevation="10dp"
-            android:gravity="center"
-            android:scaleType="centerCrop"
-            android:translationZ="32dp" />
-    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/ll_previous_aya"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="15dp">
+            <ImageButton
+                android:id="@+id/previous_aya"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:paddingEnd="25dp"
+                android:background="@drawable/ic_previous"
+                android:contentDescription="Previous"
+                android:elevation="10dp"
+                android:gravity="center"
+                android:scaleType="centerCrop"
+                android:translationZ="32dp" />
+        </LinearLayout>
 
 
 
