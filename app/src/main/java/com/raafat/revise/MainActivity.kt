@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
@@ -17,6 +18,8 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
+import android.text.style.RelativeSizeSpan
+import android.text.style.UnderlineSpan
 import android.util.Log
 import android.view.View
 import android.widget.*
@@ -345,8 +348,9 @@ class MainActivity : AppCompatActivity() {
             index = 1
             runOnUiThread {
                 val textWithHighlights: Spannable = SpannableString(textView.text)
+
                 textWithHighlights.setSpan(
-                    ForegroundColorSpan(resources.getColor(R.color.gray)),
+                    ForegroundColorSpan(Color.TRANSPARENT),
                     0,
                     textView.text.length - 1,
                     Spanned.SPAN_INCLUSIVE_INCLUSIVE
@@ -363,12 +367,11 @@ class MainActivity : AppCompatActivity() {
             var text = textView.text.toString().split(" ","\u00a0").toList()
             if (index > 1 ){
                 runOnUiThread {
-                    val offset : Int = if(index == text.size) 1 else 0
                     val textWithHighlights: Spannable = SpannableString(textView.text)
                     textWithHighlights.setSpan(
-                        ForegroundColorSpan(resources.getColor(R.color.gray)),
+                        ForegroundColorSpan(Color.GRAY),
                         text.subList(0, index - 2).joinToString(" ").length,
-                        text.subList(0, index - offset).joinToString(" ").length,
+                        text.subList(0, index - 1).joinToString(" ").length,
                         Spanned.SPAN_INCLUSIVE_INCLUSIVE
                     )
                     textView.text = textWithHighlights
@@ -391,7 +394,7 @@ class MainActivity : AppCompatActivity() {
                 runOnUiThread {
                     val textWithHighlights: Spannable = SpannableString(textView.text)
                     textWithHighlights.setSpan(
-                        ForegroundColorSpan(resources.getColor(R.color.white)),
+                        ForegroundColorSpan(Color.WHITE),
                         text.subList(0, 0).joinToString(" ").length,
                         text.subList(0, index).joinToString(" ").length,
                         Spanned.SPAN_INCLUSIVE_INCLUSIVE
