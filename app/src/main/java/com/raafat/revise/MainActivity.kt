@@ -7,13 +7,17 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
-import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -21,14 +25,14 @@ import androidx.core.content.res.ResourcesCompat
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.google.android.material.slider.Slider
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.gson.Gson
 import com.raafat.revise.data.AyaList
 import kotlinx.coroutines.runBlocking
-import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var textView: TextView
+    private lateinit var textView: PagedTextView
 
     private lateinit var slider: Slider
     private lateinit var spinner: Spinner
@@ -37,14 +41,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var next: ImageButton
     private lateinit var ayaCount: TextView
     private lateinit var menu: ImageButton
+    private lateinit var hide: SwitchMaterial
 
     private lateinit var gson: AyaList
-    private var currentSura = 0
 
-    val stack = Stack<String>()
-    var i = 0
-    val current = StringBuilder()
-    var globalVerse = 0
+    private var hideAya = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +68,7 @@ class MainActivity : AppCompatActivity() {
             // record the fact that the app has been started at least once
             settings.edit().putBoolean("my_first_time", false).apply()
         }
+        hide = findViewById(R.id.hide)
 
         ayaCount = findViewById(R.id.aya_count)
         menu = findViewById(R.id.menu)
@@ -119,18 +122,85 @@ class MainActivity : AppCompatActivity() {
         )
         spinner.adapter = adapter
 
-        var sura = savedSura
-        spinner.setSelection(sura)
+
+        var sora = savedSura
+        spinner.setSelection(sora)
         var clicked = spinner.selectedItemPosition != savedSura
-        var verse = savedAya.toInt()
-        slider.value = verse.toFloat()
-        ayaCount.text = "الآية   ".plus("${slider.value.toInt()}")
+        var ayaNo = savedAya.toInt()
+        slider.value = savedAya
+
+        var i = 0
+        var index = 1
+        var list = gson.filter { aya -> aya.ayaNo == ayaNo }
+            .filter { aya -> aya.sora == sora + 1 }[0].ayaText.split(" ").toList()
+
+        var newList = list.subList(0, list.size - 1).joinToString(" ")
+        var lastChar = "\u00a0".plus(list.last())
+
+        var string = newList.plus(lastChar)
+        textView.text = string
 
 
-        slider.valueTo = numberOfAyahsForSuraArray[sura].toFloat()
-        globalVerse =
-            ((gson.filter { Sura -> Sura.sora == sura + 1 }).filter { Aya -> Aya.ayaNo == verse })[0].id - 1
+        slider.value = ayaNo.toFloat()
+        ayaCount.text = "".plus("${slider.value.toInt()}")
 
+
+        slider.valueTo = numberOfAyahsForSuraArray[sora].toFloat()
+
+        fun nextClicked(){
+            if (i < textView.size() - 1 )
+                textView.next(++i)
+
+            else{
+                if(ayaNo < numberOfAyahsForSuraArray[sora - 1]) {
+                    ayaNo++
+                    slider.value = ayaNo.toFloat()
+                    ayaCount.text = "".plus("${slider.value.toInt()}")
+
+                    list = gson.filter { aya -> aya.ayaNo == ayaNo }
+                        .filter { aya -> aya.sora == sora }[0].ayaText.split(" ").toList()
+
+                    newList = list.subList(0, list.size - 1).joinToString(" ")
+                    lastChar = "\u00a0".plus(list.last())
+
+                    string = newList.plus(lastChar)
+                    textView.text = string
+
+                    textView.paginate(textView.text)
+                    i = 0
+                    textView.next(i)
+                }
+            }
+        }
+
+        fun previousClicked(){
+            if (i > 0 )
+                textView.next(--i)
+
+            else{
+                if (ayaNo > 1) {
+                    ayaNo--
+                    slider.value = ayaNo.toFloat()
+                    ayaCount.text = "".plus("${slider.value.toInt()}")
+
+                    list = gson.filter { aya -> aya.ayaNo == ayaNo }
+                        .filter { aya -> aya.sora == sora }[0].ayaText.split(" ").toList()
+                    newList = list.subList(0, list.size - 1).joinToString(" ")
+                    lastChar = "\u00a0".plus(list.last())
+
+                    string = newList.plus(lastChar)
+                    textView.text = string
+                    textView.paginate(textView.text)
+                    i = textView.size() - 1
+                    textView.next(i)
+                }
+            }
+        }
+
+        fun setTextView(){
+            previousClicked()
+            nextClicked()
+        }
 
         spinner.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
@@ -140,36 +210,47 @@ class MainActivity : AppCompatActivity() {
             ) {
                 if (position >= 0){
                     if (clicked) {
-                        sura = position + 1
-                        i = 0
-                        current.clear()
-                        stack.clear()
+                        sora = position + 1
+                        ayaNo = 1
+
 
                         slider.value = 1f
-                        ayaCount.text = "الآية   ".plus("${slider.value.toInt()}")
-                        globalVerse =
-                            ((gson.filter { Sura -> Sura.sora == sura }).filter { Aya -> Aya.ayaNo == 1 })[0].id - 1
+                        ayaCount.text = "".plus("${slider.value.toInt()}")
 
-                        textView.text = getWords(globalVerse, gson).joinToString(" ")
-                        textView.setTextColor(Color.GRAY)
-                        textView.maxLines = 1
+                        if(slider.value == 1f){
+                            ayaNo = 1
+                            ayaCount.text = "".plus("${slider.value.toInt()}")
 
-                        currentSura = gson[globalVerse].sora
+                            list = gson.filter { aya -> aya.ayaNo == ayaNo }
+                                .filter { aya -> aya.sora == sora }[0].ayaText.split(" ").toList()
+
+                            newList = list.subList(0, list.size - 1).joinToString(" ")
+                            lastChar = "\u00a0".plus(list.last())
+
+                            string = newList.plus(lastChar)
+                            textView.text = string
+
+                            textView.paginate(textView.text)
+                            i = 0
+                            textView.next(i)
+
+                        }
+
+                        hide.isChecked = false
+                        hideAya = false
+
                         slider.valueTo = numberOfAyahsForSuraArray[position].toFloat()
 
                     } else {
                         clicked = true
-                        sura = position + 1
-                        i = 0
-                        current.clear()
-                        stack.clear()
+                        sora = position + 1
 
 
-                        textView.text = getWords(globalVerse, gson).joinToString(" ")
-                        textView.setTextColor(Color.GRAY)
-                        textView.maxLines = 1
+                        hide.isChecked = false
+                        hideAya = false
 
-                        currentSura = gson[globalVerse].sora
+                        ayaCount.text = "".plus("${slider.value.toInt()}")
+
                         slider.valueTo = numberOfAyahsForSuraArray[position].toFloat()
 
                     }
@@ -184,274 +265,230 @@ class MainActivity : AppCompatActivity() {
 
         slider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
             override fun onStartTrackingTouch(slider: Slider) {
-                verse = slider.value.toInt()
-                ayaCount.text = "الآية   ".plus("${slider.value.toInt()}")
+                ayaNo = slider.value.toInt()
+                ayaCount.text = "".plus("${slider.value.toInt()}")
 
-                globalVerse =
-                    ((gson.filter { Sura -> Sura.sora == sura }).filter { Aya -> Aya.ayaNo == verse })[0].id - 1
+                hide.isChecked = false
+                hideAya = false
+
+                if(slider.value == 1f){
+                    ayaNo = 1
+                    ayaCount.text = "".plus("${slider.value.toInt()}")
+
+                    list = gson.filter { aya -> aya.ayaNo == ayaNo }
+                        .filter { aya -> aya.sora == sora }[0].ayaText.split(" ").toList()
+
+                    newList = list.subList(0, list.size - 1).joinToString(" ")
+                    lastChar = "\u00a0".plus(list.last())
+
+                    string = newList.plus(lastChar)
+                    textView.text = string
+
+                    textView.paginate(textView.text)
+                    i = 0
+                    textView.next(i)
+
+                }
+                else {
+                    setTextView()
+                }
                 i = 0
-                current.clear()
-                stack.clear()
-
-                textView.text = getWords(globalVerse, gson).joinToString(" ")
-                textView.setTextColor(Color.GRAY)
-                textView.maxLines = 1
-
+                textView.next(i)
 
             }
 
             override fun onStopTrackingTouch(slider: Slider) {
-                verse = slider.value.toInt()
-                ayaCount.text = "الآية   ".plus("${slider.value.toInt()}")
+                ayaNo = slider.value.toInt()
+                ayaCount.text = "".plus("${slider.value.toInt()}")
 
-                globalVerse =
-                    ((gson.filter { Sura -> Sura.sora == sura }).filter { Aya -> Aya.ayaNo == verse })[0].id - 1
+                hide.isChecked = false
+                hideAya = false
+
+                if(slider.value == 1f){
+                    ayaNo = 1
+                    ayaCount.text = "".plus("${slider.value.toInt()}")
+
+                    list = gson.filter { aya -> aya.ayaNo == ayaNo }
+                        .filter { aya -> aya.sora == sora }[0].ayaText.split(" ").toList()
+
+                    newList = list.subList(0, list.size - 1).joinToString(" ")
+                    lastChar = "\u00a0".plus(list.last())
+
+                    string = newList.plus(lastChar)
+                    textView.text = string
+
+                    textView.paginate(textView.text)
+                    i = 0
+                    textView.next(i)
+                }
+                else {
+                    setTextView()
+                }
                 i = 0
-                current.clear()
-                stack.clear()
-
-
-                if (slider.value == 1f)
-                    textView.text = getWords(globalVerse, gson).joinToString(" ")
-                else
-                    textView.text = getWords(globalVerse, gson).joinToString(" ")
-                textView.setTextColor(Color.GRAY)
-                textView.maxLines = 1
-
+                textView.next(i)
 
             }
 
         })
 
         slider.addOnChangeListener { slider, _, _ ->
-            ayaCount.text = "الآية   ".plus("${slider.value.toInt()}")
+            ayaCount.text = "".plus("${slider.value.toInt()}")
 
 
         }
 
 
-        currentSura = gson[globalVerse].sora
+
+
+
+        fun hide(){
+            index = 1
+            runOnUiThread {
+                val textWithHighlights: Spannable = SpannableString(textView.text)
+                textWithHighlights.setSpan(
+                    ForegroundColorSpan(resources.getColor(R.color.gray)),
+                    0,
+                    textView.text.length - 1,
+                    Spanned.SPAN_INCLUSIVE_INCLUSIVE
+                )
+
+                textView.text = textWithHighlights
+            }
+        }
+        if (hideAya)
+            hide()
 
 
         fun undoClicked(){
-            if (i > 0 && current.isNotEmpty()) {
-
-                if (i == getWords(globalVerse, gson).size) {
-                    current.delete(
-                        current.length - "    ${getWords(globalVerse, gson)[i - 2]}".length,
-                        current.length
+            var text = textView.text.toString().split(" ","\u00a0").toList()
+            if (index > 1 ){
+                runOnUiThread {
+                    val offset : Int = if(index == text.size) 1 else 0
+                    val textWithHighlights: Spannable = SpannableString(textView.text)
+                    textWithHighlights.setSpan(
+                        ForegroundColorSpan(resources.getColor(R.color.gray)),
+                        text.subList(0, index - 2).joinToString(" ").length,
+                        text.subList(0, index - offset).joinToString(" ").length,
+                        Spanned.SPAN_INCLUSIVE_INCLUSIVE
                     )
-                    i-=2
+                    textView.text = textWithHighlights
                 }
-                else {
-
-                    current.delete(
-                        current.length - " ${getWords(globalVerse, gson)[i - 1]}".length,
-                        current.length
-                    )
-                    i--
-                }
-
-                textView.text = current.toString()
-
-
-                if (i > 0 && current.length < 2)
-                    textView.text = current.clear().append(stack.pop())
-
+                index--
             }
 
-
-            if (i == 0 && stack.isNotEmpty()){
-                globalVerse--
-                i = getWords(globalVerse, gson).size
-                textView.text = current.clear().append(stack.pop())
-                slider.value = gson[globalVerse].ayaNo.toFloat()
-                ayaCount.text = "الآية   ".plus("${slider.value.toInt()}")
-            }
-
-            if (i == 0 && current.isEmpty()){
-                textView.text = getWords(globalVerse, gson).joinToString(" ")
-                textView.setTextColor(Color.GRAY)
-                textView.maxLines = 1
-
-
+            else{
+                previousClicked()
+                text = textView.text.toString().split(" ","\u00a0").toList()
+                index = text.size
             }
         }
 
-        fun textViewClicked(){
-
-            textView.maxLines = 50
-            textView.setTextColor(Color.WHITE)
-
-            if (i <= getWords(globalVerse, gson).size - 2) {
-                if (i == getWords(globalVerse, gson).size - 2) {
-                    textView.text = current.append(getWords(globalVerse, gson)[i++]).append("\u00A0")
-                        .append(getWords(globalVerse, gson)[i++]).append(" ")
 
 
-                } else {
-                    textView.text = current.append(getWords(globalVerse, gson)[i++]).append(" ")
+        fun textViewClicked() {
+            val text = textView.text.toString().split(" ","\u00a0").toList()
+            if (index <= text.size-1){
+                runOnUiThread {
+                    val textWithHighlights: Spannable = SpannableString(textView.text)
+                    textWithHighlights.setSpan(
+                        ForegroundColorSpan(resources.getColor(R.color.white)),
+                        text.subList(0, 0).joinToString(" ").length,
+                        text.subList(0, index).joinToString(" ").length,
+                        Spanned.SPAN_INCLUSIVE_INCLUSIVE
+                    )
+                    textView.text = textWithHighlights
                 }
-            } else {
-                if (globalVerse != 6235) {
-                    i = 0
-                    ++globalVerse
-                    stack.push(current.toString())
-
-                    slider.value = gson[globalVerse].ayaNo.toFloat()
-                    ayaCount.text = "الآية   ".plus("${slider.value.toInt()}")
-                    if (currentSura != gson[globalVerse].sora) {
-                        spinner.setSelection(currentSura, true)
-                        current.clear()
-                        stack.clear()
-                        currentSura = gson[globalVerse].sora
-                    }
-                    textView.text = current.append(getWords(globalVerse, gson)[i++]).append(" ")
-
-                }
+                index++
             }
-
-
-            if(resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                if ((textView.lineCount + 2) * textView.lineHeight > textView.height) {
-                    if (i == getWords(globalVerse, gson).size) {
-                        textView.text = current
-                    } else if (i == 1) {
-                        textView.text =
-                            current.clear().append(getWords(globalVerse, gson)[i - 1]).append(" ")
-                    } else {
-                        stack.push(
-                            current.removeRange(
-                                current.length - " ${getWords(globalVerse, gson)[i - 1]}".length,
-                                current.length
-                            ).toString()
-                        )
-
-                        textView.text =
-                            current.clear().append(getWords(globalVerse, gson)[i - 1]).append(" ")
-                    }
-                }
-            }
-
-            if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                if ((textView.lineCount + 1) * textView.lineHeight > textView.height) {
-                    if (i == getWords(globalVerse, gson).size) {
-                        textView.text = current
-                    } else if (i == 1) {
-                        textView.text =
-                            current.clear().append(getWords(globalVerse, gson)[i - 1]).append(" ")
-                    } else {
-                        stack.push(
-                            current.removeRange(
-                                current.length - " ${getWords(globalVerse, gson)[i - 1]}".length,
-                                current.length
-                            ).toString()
-                        )
-
-                        textView.text =
-                            current.clear().append(getWords(globalVerse, gson)[i - 1]).append(" ")
-                    }
-                }
+            else{
+                nextClicked()
+                hide()
+                textViewClicked()
             }
         }
+
+
+        hide.setOnClickListener{
+            hideAya = !hideAya
+            if (hideAya) {
+                hide()
+                hide.isChecked = true
+            }
+            else {
+                textView.next(i)
+                hide.isChecked = false
+            }
+        }
+
+
+
 
         textView.setOnClickListener {
-            textViewClicked()
+            if (hideAya) {
+                textViewClicked()
+            }
+            else {
+                nextClicked()
+            }
         }
 
         textView.setOnLongClickListener(object : OnContinuousClickListener(750){
             override fun onContinuousClick(v: View?) {
-                if (i > 0 && current.isNotEmpty()){
+                if (hideAya){
                     undoClicked()
-                    vibratePhone()
+                }
+                else{
+                    previousClicked()
                 }
             }
 
         })
 
-        fun previousClicked(){
-            if(i == 0 && current.isEmpty()){
-                if (globalVerse > 0) {
-                    i = 0
 
-                    --globalVerse
-                    slider.value = gson[globalVerse].ayaNo.toFloat()
-                    ayaCount.text = "الآية   ".plus("${slider.value.toInt()}")
-
-                    if (currentSura != gson[globalVerse].sora) {
-                        spinner.setSelection(currentSura - 2, true)
-                        slider.valueTo = numberOfAyahsForSuraArray[gson[globalVerse].sora - 1].toFloat()
-                        clicked = false
-                        current.clear()
-                        currentSura = gson[globalVerse].sora
-                    }
-                    current.clear()
-                    stack.clear()
-
-                    textView.text = getWords(globalVerse, gson).joinToString(" ")
-                    textView.setTextColor(Color.GRAY)
-                    textView.maxLines = 1
-                }
-            }
-
-            if(i > 0 && i <= getWords(globalVerse, gson).size - 2) {
-                for (j in i downTo 1)  {
-                    undoClicked()
-                }
-            }
-            else {
-                for (j in i downTo 2)  {
-                    undoClicked()
-                }
-            }
-        }
-
-        fun nextClicked(){
-            if (globalVerse != 6235) {
-                i = 0
-
-                ++globalVerse
-                slider.value = gson[globalVerse].ayaNo.toFloat()
-                ayaCount.text = "الآية   ".plus("${slider.value.toInt()}")
-
-                if (currentSura != gson[globalVerse].sora) {
-                    spinner.setSelection(currentSura, true)
-                    clicked = false
-                    current.clear()
-                    currentSura = gson[globalVerse].sora
-                }
-                current.clear()
-                stack.clear()
-
-                textView.text = getWords(globalVerse, gson).joinToString(" ")
-                textView.setTextColor(Color.GRAY)
-                textView.maxLines = 1
-            }
-
-        }
 
         ll_previous.setOnClickListener {
-            previousClicked()
+            if(hideAya) {
+                previousClicked()
+                hide()
+            }
+            else{
+                previousClicked()
+            }
         }
 
         previous.setOnClickListener {
-            previousClicked()
+            if(hideAya) {
+                previousClicked()
+                hide()
+            }
+            else{
+                previousClicked()
+            }
         }
 
         ll_next.setOnClickListener {
-            nextClicked()
+            if(hideAya) {
+                nextClicked()
+                hide()
+            }
+            else{
+                nextClicked()
+            }
         }
 
         next.setOnClickListener {
-            nextClicked()
+            if(hideAya) {
+                nextClicked()
+                hide()
+            }
+            else{
+                nextClicked()
+            }
         }
 
     }
 
 
-    private fun getWords(verse: Int, ayaList: AyaList): Array<String> {
-        return ayaList[verse].ayaText.split(" ").toTypedArray()
-    }
 
     override fun onPause() {
         super.onPause()
@@ -460,11 +497,14 @@ class MainActivity : AppCompatActivity() {
         putSharedPrefs.edit().putFloat("slider", slider.value).apply()
     }
 
-    private fun startNewActivity(verse: Int) {
+    private fun startNewActivity(sora: Int, ayaNo: Int) {
+        Log.i("TAG", "showPopupMenu: ${sora} , ${ayaNo}")
+
         val intent =  Intent()
         intent.action = Intent.ACTION_VIEW
-        intent.data = Uri.parse("quran://${gson[verse].sora}/${gson[verse].ayaNo}")
+        intent.data = Uri.parse("quran://$sora/$ayaNo")
         startActivity(intent)
+
     }
 
     private fun isAppInstalled(context: Context, packageName: String?): Boolean {
@@ -478,14 +518,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun vibratePhone() {
-        val vibrator = this.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        if (Build.VERSION.SDK_INT >= 26) {
-            vibrator.vibrate(VibrationEffect.createOneShot(20, VibrationEffect.DEFAULT_AMPLITUDE))
-        } else {
-            vibrator.vibrate(20)
-        }
-    }
 
     fun getFont(): Typeface {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) resources.getFont(R.font.uthmanic_hafs)
@@ -497,33 +529,11 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.main_menu, menu)
         setOnMenuItemClickListener {
             when(it.itemId) {
-                R.id.orientation -> {
-                    if(resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE){
-                        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                        i = 0
-                        stack.clear()
-                        current.clear()
-                        textView.text = getWords(globalVerse, gson).joinToString(" ")
-                        textView.setTextColor(Color.GRAY)
-                        textView.maxLines = 1
-                    }
-                    if(resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT){
-                        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                        i = 0
-                        stack.clear()
-                        current.clear()
-                        textView.text = getWords(globalVerse, gson).joinToString(" ")
-                        textView.setTextColor(Color.GRAY)
-                        textView.maxLines = 1
-                    }
-
-                    true
-                }
                 R.id.launch -> {
                     val appisFound = isAppInstalled(view.context, "com.quran.labs.androidquran")
-                    if(appisFound)
-                        startNewActivity(globalVerse)
-                    else{
+                    if(appisFound) {
+                        startNewActivity(spinner.selectedItemPosition + 1, slider.value.toInt())
+                    }else{
                         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.quran.labs.androidquran")))
                     }
                     true
@@ -552,9 +562,9 @@ class MainActivity : AppCompatActivity() {
                     .targetCircleColor(R.color.white)
                     .textColor(R.color.black)
                     .dimColor(R.color.black)
+                    .targetRadius(100)
                     .drawShadow(true)
-                    .tintTarget(true)
-                    .targetRadius(65)
+                    .tintTarget(false)
                     .id(1)
                     .cancelable(false),
                 TapTarget.forView(findViewById(R.id.slider), "اختر الآية")
@@ -624,6 +634,19 @@ class MainActivity : AppCompatActivity() {
                     .tintTarget(true)
                     .targetRadius(Resources.getSystem().displayMetrics.heightPixels / 5)
                     .id(6)
+                    .cancelable(false),
+                TapTarget.forView(findViewById(R.id.hide), "إخفاء الآيات")
+                    .transparentTarget(true)
+                    .textTypeface(getFont())
+                    .titleTextSize(30)
+                    .outerCircleAlpha(0.96f)
+                    .outerCircleColor(R.color.white)
+                    .targetCircleColor(R.color.white)
+                    .textColor(R.color.black)
+                    .dimColor(R.color.black)
+                    .drawShadow(true)
+                    .tintTarget(true)
+                    .id(7)
                     .cancelable(false)
 
             )

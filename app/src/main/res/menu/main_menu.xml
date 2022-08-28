@@ -2,10 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/orientation"
-        android:title="تغيير نمط الشاشة (أفقى/رأسي)"/>
-
-    <item
         android:id="@+id/launch"
         android:title="فتح الآية فى تطبيق قرآن أندرويد"/>
 

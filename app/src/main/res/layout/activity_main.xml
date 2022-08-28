@@ -32,6 +32,10 @@
             android:layout_width="50dp"
             android:layout_height="match_parent"/>
 
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/hide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
         <TextView
             android:id="@+id/aya_count"
@@ -42,36 +46,37 @@
             android:layout_gravity="center"
             android:letterSpacing="0.1"
             android:gravity="center"
-            android:layout_weight="5"
+            android:layout_weight="1"
             android:fontFamily="@font/uthmanic_hafs"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"
-            tools:text="  الآية   236" />
+            tools:text="236" />
 
         <Spinner
             android:id="@+id/sura_spinner"
             android:layout_width="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="25dp"
-            android:layout_weight="5"
+            android:layout_weight="8"
             android:layout_height="wrap_content"
             android:background="@null"
             android:layout_gravity="center"
             android:backgroundTint="@color/white"
-            android:dropDownWidth="match_parent"
+            android:dropDownWidth="200dp"
             android:overlapAnchor="true" />
 
     </LinearLayout>
 
-    <TextView
+    <com.raafat.revise.PagedTextView
         android:id="@+id/quran_content_tv"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:background="@color/gray"
-        android:breakStrategy="simple"
+        android:textAlignment="center"
+        android:gravity="top|center"
         android:elevation="10dp"
         android:fontFamily="@font/hafs_smart"
         android:padding="16dp"
