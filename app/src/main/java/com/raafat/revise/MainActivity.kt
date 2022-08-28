@@ -3,23 +3,17 @@ package com.raafat.revise
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
-import android.text.style.RelativeSizeSpan
-import android.text.style.UnderlineSpan
 import android.util.Log
 import android.view.View
 import android.widget.*
@@ -27,8 +21,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
+import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.slider.Slider
-import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.gson.Gson
 import com.raafat.revise.data.AyaList
 import kotlinx.coroutines.runBlocking
@@ -42,9 +36,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var previous: ImageButton
     private lateinit var next: ImageButton
-    private lateinit var ayaCount: TextView
-    private lateinit var menu: ImageButton
-    private lateinit var hide: SwitchMaterial
+
+     private lateinit var menu: ImageButton
+    private lateinit var hide: MaterialSwitch
 
     private lateinit var gson: AyaList
 
@@ -73,12 +67,10 @@ class MainActivity : AppCompatActivity() {
         }
         hide = findViewById(R.id.hide)
 
-        ayaCount = findViewById(R.id.aya_count)
         menu = findViewById(R.id.menu)
         previous = findViewById(R.id.previous_aya)
         next = findViewById(R.id.next_aya)
-        val ll_previous = findViewById<LinearLayout>(R.id.ll_previous_aya)
-        val ll_next = findViewById<LinearLayout>(R.id.ll_next_aya)
+
 
 
         spinner = findViewById(R.id.sura_spinner)
@@ -145,7 +137,6 @@ class MainActivity : AppCompatActivity() {
 
 
         slider.value = ayaNo.toFloat()
-        ayaCount.text = "".plus("${slider.value.toInt()}")
 
 
         slider.valueTo = numberOfAyahsForSuraArray[sora].toFloat()
@@ -158,7 +149,6 @@ class MainActivity : AppCompatActivity() {
                 if(ayaNo < numberOfAyahsForSuraArray[sora - 1]) {
                     ayaNo++
                     slider.value = ayaNo.toFloat()
-                    ayaCount.text = "".plus("${slider.value.toInt()}")
 
                     list = gson.filter { aya -> aya.ayaNo == ayaNo }
                         .filter { aya -> aya.sora == sora }[0].ayaText.split(" ").toList()
@@ -184,7 +174,6 @@ class MainActivity : AppCompatActivity() {
                 if (ayaNo > 1) {
                     ayaNo--
                     slider.value = ayaNo.toFloat()
-                    ayaCount.text = "".plus("${slider.value.toInt()}")
 
                     list = gson.filter { aya -> aya.ayaNo == ayaNo }
                         .filter { aya -> aya.sora == sora }[0].ayaText.split(" ").toList()
@@ -218,11 +207,9 @@ class MainActivity : AppCompatActivity() {
 
 
                         slider.value = 1f
-                        ayaCount.text = "".plus("${slider.value.toInt()}")
 
                         if(slider.value == 1f){
                             ayaNo = 1
-                            ayaCount.text = "".plus("${slider.value.toInt()}")
 
                             list = gson.filter { aya -> aya.ayaNo == ayaNo }
                                 .filter { aya -> aya.sora == sora }[0].ayaText.split(" ").toList()
@@ -252,7 +239,6 @@ class MainActivity : AppCompatActivity() {
                         hide.isChecked = false
                         hideAya = false
 
-                        ayaCount.text = "".plus("${slider.value.toInt()}")
 
                         slider.valueTo = numberOfAyahsForSuraArray[position].toFloat()
 
@@ -269,14 +255,12 @@ class MainActivity : AppCompatActivity() {
         slider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
             override fun onStartTrackingTouch(slider: Slider) {
                 ayaNo = slider.value.toInt()
-                ayaCount.text = "".plus("${slider.value.toInt()}")
 
                 hide.isChecked = false
                 hideAya = false
 
                 if(slider.value == 1f){
                     ayaNo = 1
-                    ayaCount.text = "".plus("${slider.value.toInt()}")
 
                     list = gson.filter { aya -> aya.ayaNo == ayaNo }
                         .filter { aya -> aya.sora == sora }[0].ayaText.split(" ").toList()
@@ -302,14 +286,12 @@ class MainActivity : AppCompatActivity() {
 
             override fun onStopTrackingTouch(slider: Slider) {
                 ayaNo = slider.value.toInt()
-                ayaCount.text = "".plus("${slider.value.toInt()}")
 
                 hide.isChecked = false
                 hideAya = false
 
                 if(slider.value == 1f){
                     ayaNo = 1
-                    ayaCount.text = "".plus("${slider.value.toInt()}")
 
                     list = gson.filter { aya -> aya.ayaNo == ayaNo }
                         .filter { aya -> aya.sora == sora }[0].ayaText.split(" ").toList()
@@ -333,15 +315,6 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
-
-        slider.addOnChangeListener { slider, _, _ ->
-            ayaCount.text = "".plus("${slider.value.toInt()}")
-
-
-        }
-
-
-
 
 
         fun hide(){
@@ -369,7 +342,7 @@ class MainActivity : AppCompatActivity() {
                 runOnUiThread {
                     val textWithHighlights: Spannable = SpannableString(textView.text)
                     textWithHighlights.setSpan(
-                        ForegroundColorSpan(Color.GRAY),
+                        ForegroundColorSpan(resources.getColor(R.color.gray)),
                         text.subList(0, index - 2).joinToString(" ").length,
                         text.subList(0, index - 1).joinToString(" ").length,
                         Spanned.SPAN_INCLUSIVE_INCLUSIVE
@@ -404,9 +377,11 @@ class MainActivity : AppCompatActivity() {
                 index++
             }
             else{
-                nextClicked()
-                hide()
-                textViewClicked()
+                if (slider.value < slider.valueTo) {
+                    nextClicked()
+                    hide()
+                    textViewClicked()
+                }
             }
         }
 
@@ -448,17 +423,6 @@ class MainActivity : AppCompatActivity() {
         })
 
 
-
-        ll_previous.setOnClickListener {
-            if(hideAya) {
-                previousClicked()
-                hide()
-            }
-            else{
-                previousClicked()
-            }
-        }
-
         previous.setOnClickListener {
             if(hideAya) {
                 previousClicked()
@@ -469,15 +433,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        ll_next.setOnClickListener {
-            if(hideAya) {
-                nextClicked()
-                hide()
-            }
-            else{
-                nextClicked()
-            }
-        }
+
 
         next.setOnClickListener {
             if(hideAya) {

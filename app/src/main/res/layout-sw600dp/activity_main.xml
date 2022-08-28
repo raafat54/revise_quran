@@ -33,26 +33,16 @@
             android:layout_width="50dp"
             android:layout_height="match_parent"/>
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
+        <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/hide"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:id="@+id/aya_count"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="#292929"
-            android:layout_marginStart="16dp"
-            android:layout_gravity="center"
-            android:letterSpacing="0.1"
-            android:gravity="center"
-            android:layout_weight="5"
-            android:fontFamily="@font/uthmanic_hafs"
-            android:textColor="@color/white"
-            android:textSize="24sp"
+            android:text="تسميع"
+            android:textColor="#c9c9c9"
+            android:textSize="20dp"
             android:textStyle="bold"
-            tools:text="  الآية   236" />
+            android:layoutDirection="rtl"
+            android:fontFamily="@font/uthmanic_hafs"/>
 
         <Spinner
             android:id="@+id/sura_spinner"
@@ -64,7 +54,7 @@
             android:background="@null"
             android:layout_gravity="center"
             android:backgroundTint="@color/white"
-            android:dropDownWidth="match_parent"
+            android:dropDownWidth="200dp"
             android:overlapAnchor="true" />
 
     </LinearLayout>
@@ -94,8 +84,8 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="15dp"
-        android:paddingBottom="30dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
         android:background="#000000"
         android:elevation="20dp"
         android:gravity="center"
@@ -104,23 +94,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout">
 
-        <LinearLayout
-            android:id="@+id/ll_next_aya"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="15dp">
-            <ImageButton
-                android:id="@+id/next_aya"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:paddingEnd="25dp"
-                android:background="@drawable/ic_next"
-                android:contentDescription="Next"
-                android:elevation="10dp"
-                android:gravity="center"
-                android:scaleType="centerCrop"
-                android:translationZ="32dp" />
-        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/next_aya"
+            android:layout_width="55dp"
+            android:layout_height="40dp"
+            android:paddingEnd="25dp"
+            android:background="@drawable/ic_next"
+            android:contentDescription="Next"
+            android:elevation="10dp"
+            android:gravity="center"
+            android:scaleType="centerCrop"
+            android:translationZ="32dp" />
 
         <com.google.android.material.slider.Slider
             android:id="@+id/slider"
@@ -130,6 +115,9 @@
             android:layout_marginEnd="10dp"
             android:layout_weight="1"
             android:layoutDirection="rtl"
+            app:tickColor="@color/black"
+            app:thumbColor="@color/white"
+            app:trackColorActive="@color/white"
             android:stepSize="1"
             android:value="1"
             android:valueFrom="1"
@@ -137,14 +125,10 @@
             app:labelBehavior="gone"
             tools:valueTo="7" />
 
-        <LinearLayout
-            android:id="@+id/ll_previous_aya"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingEnd="15dp">
+
             <ImageButton
                 android:id="@+id/previous_aya"
-                android:layout_width="40dp"
+                android:layout_width="55dp"
                 android:layout_height="40dp"
                 android:paddingEnd="25dp"
                 android:background="@drawable/ic_previous"
@@ -157,7 +141,6 @@
 
 
 
-    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
