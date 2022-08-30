@@ -21,14 +21,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        <ImageButton
             android:id="@+id/menu"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0.1"
+            android:src="@drawable/ic_menu"
+            android:backgroundTint="@color/gray"
+            android:contentDescription="menu" />
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/launch"
             android:layout_gravity="center"
             android:layout_weight="1"
             android:text="تطبيق قرآن"
             android:textColor="@color/white"
             android:textSize="20sp"
-            android:layout_marginStart="25dp"
+            android:layout_marginStart="5dp"
             android:fontFamily="@font/uthmanic_hafs"
             android:textStyle="bold"
             android:backgroundTint="@color/cardview_dark_background"
@@ -38,7 +46,7 @@
         <Spinner
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="5"
+            android:layout_weight="8"
             android:id="@+id/sura_spinner"
             android:dropDownWidth="200dp"
             android:layout_marginStart="25dp"/>
@@ -67,8 +75,7 @@
             android:layout_height="0dp"
             android:layout_weight="7"
             android:layout_marginEnd="8dp"
-            app:thumbRadius="15dp"
-            app:trackColor="#393939"
+            app:thumbRadius="20dp"
             android:layoutDirection="rtl"
             app:trackColorActive="@color/white"
             app:tickColor="@color/white"
@@ -91,7 +98,7 @@
             android:textAlignment="center"
             android:layout_marginStart="18dp"
             android:fontFamily="@font/uthmanic_hafs"
-            android:textSize="25sp"/>
+            android:textSize="20sp"/>
     </LinearLayout>
 
 
@@ -99,6 +106,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"
+        android:background="@color/gray"
         android:layout_marginBottom="100dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -114,7 +122,10 @@
         android:textAlignment="center"
         android:gravity="top|center"
         android:fontFamily="@font/hafs_smart"
-        android:padding="12dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="12dp"
+        android:paddingTop="32dp"
         android:textColor="@color/white"
         android:textSize="35sp" />
 
@@ -125,9 +136,9 @@
     <LinearLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:paddingTop="15dp"
-        android:paddingBottom="5dp"
+        android:layout_height="90dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="15dp"
         android:background="@color/gray"
         android:elevation="20dp"
         android:gravity="center"
@@ -158,7 +169,7 @@
             android:layout_marginStart="15dp"
             app:icon="@drawable/ic_previous"
             app:iconTint="@color/white"
-            android:backgroundTint="#090909"
+            android:backgroundTint="@color/cardview_dark_background"
             app:fabSize="normal"
             android:gravity="center"/>
 
@@ -166,19 +177,9 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="5dp"
             android:orientation="vertical">
-
-            <TextView
-                android:layout_width="55dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:text="تسميع"
-                android:textAlignment="center"
-                android:layout_marginStart="18dp"
-                android:fontFamily="@font/uthmanic_hafs"
-                android:textSize="20sp"/>
 
             <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/hide"

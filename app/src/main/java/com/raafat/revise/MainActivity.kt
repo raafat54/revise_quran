@@ -18,6 +18,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
@@ -31,13 +32,12 @@ import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity() {
     private lateinit var textView: PagedTextView
-
+    private lateinit var menu: ImageButton
     private lateinit var slider: Slider
     private lateinit var spinner: Spinner
-
     private lateinit var previous: ExtendedFloatingActionButton
 
-     private lateinit var menu: ExtendedFloatingActionButton
+     private lateinit var launch: ExtendedFloatingActionButton
     private lateinit var hide: MaterialSwitch
     private lateinit var count: TextView
     private lateinit var gson: AyaList
@@ -67,7 +67,10 @@ class MainActivity : AppCompatActivity() {
         }
         hide = findViewById(R.id.hide)
 
+        launch = findViewById(R.id.launch)
+
         menu = findViewById(R.id.menu)
+
         previous = findViewById(R.id.previous_aya)
 
         count = findViewById(R.id.count)
@@ -76,13 +79,20 @@ class MainActivity : AppCompatActivity() {
         slider = findViewById(R.id.slider)
 
 
-        menu.setOnClickListener {
+        val drawable = R.drawable.ic_thumb
+        slider.setCustomThumbDrawable(drawable)
+
+        launch.setOnClickListener {
             val appisFound = isAppInstalled(this@MainActivity, "com.quran.labs.androidquran")
             if(appisFound) {
                 startNewActivity(spinner.selectedItemPosition + 1, slider.value.toInt())
             }else{
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.quran.labs.androidquran")))
             }
+        }
+
+        menu.setOnClickListener {
+            showPopupMenu(menu)
         }
 
 
@@ -127,7 +137,7 @@ class MainActivity : AppCompatActivity() {
         var clicked = spinner.selectedItemPosition != savedSura
         var ayaNo = savedAya.toInt()
         slider.value = savedAya
-        count.text = slider.value.toInt().toString()
+        count.text = "الآية   ".plus(slider.value.toInt().toString())
 
         var i = 0
         var index = 1
@@ -323,7 +333,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         slider.addOnChangeListener { slider, value, fromUser ->
-            count.text = slider.value.toInt().toString()
+            count.text = "الآية   ".plus(slider.value.toInt().toString())
         }
 
 
@@ -352,7 +362,7 @@ class MainActivity : AppCompatActivity() {
                 runOnUiThread {
                     val textWithHighlights: Spannable = SpannableString(textView.text)
                     textWithHighlights.setSpan(
-                        ForegroundColorSpan(resources.getColor(R.color.gray)),
+                        ForegroundColorSpan(ContextCompat.getColor(this, R.color.gray)),
                         text.subList(0, index - 2).joinToString(" ").length,
                         text.subList(0, index - 1).joinToString(" ").length,
                         Spanned.SPAN_INCLUSIVE_INCLUSIVE
@@ -509,10 +519,10 @@ class MainActivity : AppCompatActivity() {
                     .dimColor(R.color.black)
                     .drawShadow(true)
                     .tintTarget(true)
-                    .targetRadius(125)
+                    .targetRadius(115)
                     .id(2)
                     .cancelable(false),
-                TapTarget.forView(findViewById(R.id.previous_aya), "الرجوع للكلمة السابقة مع النقر المستمر لأكثر من كلمة")
+                TapTarget.forView(findViewById(R.id.previous_aya), "الرجوع للكلمة السابقة مع النقر المستمر لأكثر من كلمة  (الصفحة السابقة)")
                     .transparentTarget(true)
                     .textTypeface(getFont())
                     .titleTextSize(30)
@@ -523,9 +533,10 @@ class MainActivity : AppCompatActivity() {
                     .dimColor(R.color.black)
                     .drawShadow(true)
                     .tintTarget(true)
+                    .targetRadius(120)
                     .id(3)
                     .cancelable(false),
-                TapTarget.forView(findViewById(R.id.quran_content_tv), "نقر على الشاشة لإظهار الكلمة")
+                TapTarget.forView(findViewById(R.id.quran_content_tv), "نقر على الشاشة لإظهار الكلمة  (الصفحة التالية)")
                     .transparentTarget(true)
                     .textTypeface(getFont())
                     .titleTextSize(30)
@@ -536,7 +547,7 @@ class MainActivity : AppCompatActivity() {
                     .dimColor(R.color.black)
                     .drawShadow(true)
                     .tintTarget(true)
-                    .targetRadius(180)
+                    .targetRadius(120)
                     .id(5)
                     .cancelable(false),
                 TapTarget.forView(findViewById(R.id.hide), "إخفاء الآيات")
@@ -552,7 +563,7 @@ class MainActivity : AppCompatActivity() {
                     .tintTarget(true)
                     .id(6)
                     .cancelable(false),
-                TapTarget.forView(findViewById(R.id.menu), "فتح الآية فى تطبيق قرآن أندرويد")
+                TapTarget.forView(findViewById(R.id.launch), "فتح الآية فى تطبيق قرآن أندرويد")
                     .transparentTarget(true)
                     .textTypeface(getFont())
                     .titleTextSize(30)
@@ -564,12 +575,27 @@ class MainActivity : AppCompatActivity() {
                     .drawShadow(true)
                     .tintTarget(true)
                     .id(3)
-                    .targetRadius(110)
+                    .targetRadius(70)
                     .cancelable(false)
 
             )
             .start()
     }
 
-
+    private fun showPopupMenu(view: View) = PopupMenu(view.context, view)
+        .run {
+            menuInflater.inflate(R.menu.main_menu, menu)
+            setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.tutorial -> {
+                        showTutorial()
+                        true
+                    }
+                    else -> {
+                        true
+                    }
+                }
+            }
+            show()
+        }
 }
