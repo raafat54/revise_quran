@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
@@ -15,12 +14,14 @@ import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.slider.Slider
 import com.google.gson.Gson
@@ -34,12 +35,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var slider: Slider
     private lateinit var spinner: Spinner
 
-    private lateinit var previous: ImageButton
-    private lateinit var next: ImageButton
+    private lateinit var previous: ExtendedFloatingActionButton
 
-     private lateinit var menu: ImageButton
+     private lateinit var menu: ExtendedFloatingActionButton
     private lateinit var hide: MaterialSwitch
-
+    private lateinit var count: TextView
     private lateinit var gson: AyaList
 
     private var hideAya = false
@@ -69,16 +69,20 @@ class MainActivity : AppCompatActivity() {
 
         menu = findViewById(R.id.menu)
         previous = findViewById(R.id.previous_aya)
-        next = findViewById(R.id.next_aya)
 
-
+        count = findViewById(R.id.count)
 
         spinner = findViewById(R.id.sura_spinner)
         slider = findViewById(R.id.slider)
 
 
         menu.setOnClickListener {
-            showPopupMenu(menu)
+            val appisFound = isAppInstalled(this@MainActivity, "com.quran.labs.androidquran")
+            if(appisFound) {
+                startNewActivity(spinner.selectedItemPosition + 1, slider.value.toInt())
+            }else{
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.quran.labs.androidquran")))
+            }
         }
 
 
@@ -123,6 +127,7 @@ class MainActivity : AppCompatActivity() {
         var clicked = spinner.selectedItemPosition != savedSura
         var ayaNo = savedAya.toInt()
         slider.value = savedAya
+        count.text = slider.value.toInt().toString()
 
         var i = 0
         var index = 1
@@ -140,6 +145,7 @@ class MainActivity : AppCompatActivity() {
 
 
         slider.valueTo = numberOfAyahsForSuraArray[sora].toFloat()
+
 
         fun nextClicked(){
             if (i < textView.size() - 1 )
@@ -316,6 +322,10 @@ class MainActivity : AppCompatActivity() {
 
         })
 
+        slider.addOnChangeListener { slider, value, fromUser ->
+            count.text = slider.value.toInt().toString()
+        }
+
 
         fun hide(){
             index = 1
@@ -377,11 +387,15 @@ class MainActivity : AppCompatActivity() {
                 index++
             }
             else{
-                if (slider.value < slider.valueTo) {
+                if(slider.value == slider.valueTo && i == textView.size() - 1){
+                    nextClicked()
+                }
+                else {
                     nextClicked()
                     hide()
                     textViewClicked()
                 }
+
             }
         }
 
@@ -402,48 +416,31 @@ class MainActivity : AppCompatActivity() {
 
 
         textView.setOnClickListener {
-            if (hideAya) {
-                textViewClicked()
-            }
-            else {
-                nextClicked()
-            }
+            if (hideAya) textViewClicked() else nextClicked()
+
         }
 
-        textView.setOnLongClickListener(object : OnContinuousClickListener(750){
-            override fun onContinuousClick(v: View?) {
-                if (hideAya){
-                    undoClicked()
-                }
-                else{
-                    previousClicked()
-                }
-            }
 
-        })
+        textView.setOnTouchListener { v, event ->
+            if (MotionEvent.ACTION_DOWN == event.action) {
+            } else if (MotionEvent.ACTION_UP == event.action) {
+                v.performClick()
+            }
+            true
+        }
 
 
         previous.setOnClickListener {
-            if(hideAya) {
-                previousClicked()
-                hide()
-            }
-            else{
-                previousClicked()
-            }
+            if(hideAya) undoClicked() else previousClicked()
         }
 
+        previous.setOnLongClickListener(object : OnContinuousClickListener(600){
+            override fun onContinuousClick(v: View?) {
+                if(hideAya) undoClicked() else previousClicked()
 
+            }
 
-        next.setOnClickListener {
-            if(hideAya) {
-                nextClicked()
-                hide()
-            }
-            else{
-                nextClicked()
-            }
-        }
+        })
 
     }
 
@@ -483,31 +480,6 @@ class MainActivity : AppCompatActivity() {
         else this.let { ResourcesCompat.getFont(it, R.font.uthmanic_hafs) }!!
     }
 
-    private fun showPopupMenu(view: View) = PopupMenu(view.context, view)
-        .run {
-        menuInflater.inflate(R.menu.main_menu, menu)
-        setOnMenuItemClickListener {
-            when(it.itemId) {
-                R.id.launch -> {
-                    val appisFound = isAppInstalled(view.context, "com.quran.labs.androidquran")
-                    if(appisFound) {
-                        startNewActivity(spinner.selectedItemPosition + 1, slider.value.toInt())
-                    }else{
-                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.quran.labs.androidquran")))
-                    }
-                    true
-                }
-                R.id.tutorial -> {
-                    showTutorial()
-                    true
-                }
-                else -> {
-                    true
-                }
-            }
-        }
-        show()
-    }
 
     private fun showTutorial() {
         TapTargetSequence(this@MainActivity)
@@ -537,10 +509,10 @@ class MainActivity : AppCompatActivity() {
                     .dimColor(R.color.black)
                     .drawShadow(true)
                     .tintTarget(true)
-                    .targetRadius(105)
+                    .targetRadius(125)
                     .id(2)
                     .cancelable(false),
-                TapTarget.forView(findViewById(R.id.previous_aya), "الرجوع للآية السابقة")
+                TapTarget.forView(findViewById(R.id.previous_aya), "الرجوع للكلمة السابقة مع النقر المستمر لأكثر من كلمة")
                     .transparentTarget(true)
                     .textTypeface(getFont())
                     .titleTextSize(30)
@@ -553,7 +525,7 @@ class MainActivity : AppCompatActivity() {
                     .tintTarget(true)
                     .id(3)
                     .cancelable(false),
-                TapTarget.forView(findViewById(R.id.next_aya), "بداية التسميع من الآية التالية")
+                TapTarget.forView(findViewById(R.id.quran_content_tv), "نقر على الشاشة لإظهار الكلمة")
                     .transparentTarget(true)
                     .textTypeface(getFont())
                     .titleTextSize(30)
@@ -564,35 +536,8 @@ class MainActivity : AppCompatActivity() {
                     .dimColor(R.color.black)
                     .drawShadow(true)
                     .tintTarget(true)
-                    .id(4)
-                    .cancelable(false),
-                TapTarget.forView(findViewById(R.id.slider), "نقر على الشاشة لإظهار الكلمة")
-                    .transparentTarget(true)
-                    .textTypeface(getFont())
-                    .titleTextSize(30)
-                    .outerCircleAlpha(0.96f)
-                    .outerCircleColor(R.color.white)
-                    .targetCircleColor(R.color.white)
-                    .textColor(R.color.black)
-                    .dimColor(R.color.black)
-                    .drawShadow(true)
-                    .tintTarget(true)
-                    .targetRadius(Resources.getSystem().displayMetrics.heightPixels / 5)
+                    .targetRadius(180)
                     .id(5)
-                    .cancelable(false),
-                TapTarget.forView(findViewById(R.id.slider), "نقر مستمر للرجوع للكلمات السابقة")
-                    .transparentTarget(true)
-                    .textTypeface(getFont())
-                    .titleTextSize(30)
-                    .outerCircleAlpha(0.96f)
-                    .outerCircleColor(R.color.white)
-                    .targetCircleColor(R.color.white)
-                    .textColor(R.color.black)
-                    .dimColor(R.color.black)
-                    .drawShadow(true)
-                    .tintTarget(true)
-                    .targetRadius(Resources.getSystem().displayMetrics.heightPixels / 5)
-                    .id(6)
                     .cancelable(false),
                 TapTarget.forView(findViewById(R.id.hide), "إخفاء الآيات")
                     .transparentTarget(true)
@@ -605,7 +550,21 @@ class MainActivity : AppCompatActivity() {
                     .dimColor(R.color.black)
                     .drawShadow(true)
                     .tintTarget(true)
-                    .id(7)
+                    .id(6)
+                    .cancelable(false),
+                TapTarget.forView(findViewById(R.id.menu), "فتح الآية فى تطبيق قرآن أندرويد")
+                    .transparentTarget(true)
+                    .textTypeface(getFont())
+                    .titleTextSize(30)
+                    .outerCircleAlpha(0.96f)
+                    .outerCircleColor(R.color.white)
+                    .targetCircleColor(R.color.white)
+                    .textColor(R.color.black)
+                    .dimColor(R.color.black)
+                    .drawShadow(true)
+                    .tintTarget(true)
+                    .id(3)
+                    .targetRadius(110)
                     .cancelable(false)
 
             )

@@ -9,7 +9,7 @@
     android:textStyle="bold"
     android:letterSpacing="0.1"
     android:gravity="center"
-    android:background="@color/black"
+    android:background="@color/gray"
     android:textSize="20sp"
     >
 </TextView>
