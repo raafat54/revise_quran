@@ -120,6 +120,8 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:textAlignment="center"
+        android:layoutDirection="rtl"
+        android:textDirection="rtl"
         android:gravity="top|center"
         android:fontFamily="@font/hafs_smart"
         android:paddingStart="12dp"
