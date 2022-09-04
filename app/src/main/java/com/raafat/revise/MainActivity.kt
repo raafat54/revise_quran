@@ -498,95 +498,51 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun showTutorial() {
-        TapTargetSequence(this@MainActivity)
-            .targets(
-                TapTarget.forView(findViewById(R.id.sura_spinner), "اختر السورة من القائمة")
-                    .transparentTarget(true)
-                    .textTypeface(getFont())
-                    .titleTextSize(30)
-                    .outerCircleAlpha(0.96f)
-                    .outerCircleColor(R.color.white)
-                    .targetCircleColor(R.color.white)
-                    .textColor(R.color.black)
-                    .dimColor(R.color.black)
-                    .targetRadius(100)
-                    .drawShadow(true)
-                    .tintTarget(false)
-                    .id(1)
-                    .cancelable(false),
-                TapTarget.forView(findViewById(R.id.slider), "اختر الآية")
-                    .transparentTarget(true)
-                    .textTypeface(getFont())
-                    .titleTextSize(30)
-                    .outerCircleAlpha(0.96f)
-                    .outerCircleColor(R.color.white)
-                    .targetCircleColor(R.color.white)
-                    .textColor(R.color.black)
-                    .dimColor(R.color.black)
-                    .drawShadow(true)
-                    .tintTarget(true)
-                    .targetRadius(115)
-                    .id(2)
-                    .cancelable(false),
-                TapTarget.forView(findViewById(R.id.previous_aya), "الرجوع للكلمة السابقة مع النقر المستمر لأكثر من كلمة  (الصفحة السابقة)")
-                    .transparentTarget(true)
-                    .textTypeface(getFont())
-                    .titleTextSize(30)
-                    .outerCircleAlpha(0.96f)
-                    .outerCircleColor(R.color.white)
-                    .targetCircleColor(R.color.white)
-                    .textColor(R.color.black)
-                    .dimColor(R.color.black)
-                    .drawShadow(true)
-                    .tintTarget(true)
-                    .targetRadius(120)
-                    .id(3)
-                    .cancelable(false),
-                TapTarget.forView(findViewById(R.id.quran_content_tv), "نقر على الشاشة لإظهار الكلمة  (الصفحة التالية)")
-                    .transparentTarget(true)
-                    .textTypeface(getFont())
-                    .titleTextSize(30)
-                    .outerCircleAlpha(0.96f)
-                    .outerCircleColor(R.color.white)
-                    .targetCircleColor(R.color.white)
-                    .textColor(R.color.black)
-                    .dimColor(R.color.black)
-                    .drawShadow(true)
-                    .tintTarget(true)
-                    .targetRadius(120)
-                    .id(5)
-                    .cancelable(false),
-                TapTarget.forView(findViewById(R.id.hide), "إخفاء الآيات")
-                    .transparentTarget(true)
-                    .textTypeface(getFont())
-                    .titleTextSize(30)
-                    .outerCircleAlpha(0.96f)
-                    .outerCircleColor(R.color.white)
-                    .targetCircleColor(R.color.white)
-                    .textColor(R.color.black)
-                    .dimColor(R.color.black)
-                    .drawShadow(true)
-                    .tintTarget(true)
-                    .id(6)
-                    .cancelable(false),
-                TapTarget.forView(findViewById(R.id.launch), "فتح الآية فى تطبيق قرآن أندرويد")
-                    .transparentTarget(true)
-                    .textTypeface(getFont())
-                    .titleTextSize(30)
-                    .outerCircleAlpha(0.96f)
-                    .outerCircleColor(R.color.white)
-                    .targetCircleColor(R.color.white)
-                    .textColor(R.color.black)
-                    .dimColor(R.color.black)
-                    .drawShadow(true)
-                    .tintTarget(true)
-                    .id(3)
-                    .targetRadius(70)
-                    .cancelable(false)
+    var k = 0
+    val tutorial = mapOf(R.id.sura_spinner to "اختر السورة من القائمة" ,
+        R.id.sliderList to "اختر الآية",
+        R.id.previous_aya to "الرجوع للكلمة السابقة مع النقر المستمر لأكثر من كلمة  (الصفحة السابقة)",
+        R.id.quran_content_tv to "نقر على الشاشة لإظهار الكلمة  (الصفحة التالية)",
+        R.id.hide to "إخفاء الآيات",
+        R.id.launch to "فتح الآية فى تطبيق قرآن أندرويد"
+    )
+    private fun newSequence(id : Int, string: String){
 
+        val sequence = TapTargetSequence(this@MainActivity)
+           .targets(
+                TapTarget.forView(findViewById(id), string)
+                            .transparentTarget(true)
+                            .textTypeface(getFont())
+                            .titleTextSize(30)
+                            .outerCircleAlpha(1f)
+                            .outerCircleColor(R.color.white)
+                            .targetRadius(0)
+                            .cancelable(true)
+           )
+            .listener(
+                object : TapTargetSequence.Listener{
+                    override fun onSequenceFinish() {
+
+                    }
+
+                    override fun onSequenceStep(lastTarget: TapTarget?, targetClicked: Boolean) {
+
+                    }
+
+                    override fun onSequenceCanceled(lastTarget: TapTarget?) {
+                        if (k < 5) ++k else return
+                        newSequence( tutorial.keys.toIntArray()[k], tutorial.values.toTypedArray()[k])
+                    }
+
+                }
             )
-            .start()
+            sequence.start()
+
+    }
+
+    private fun showTutorial() {
+        k = 0
+        newSequence( tutorial.keys.toIntArray()[k], tutorial.values.toTypedArray()[k])
     }
 
     private fun showPopupMenu(view: View) = PopupMenu(view.context, view)
