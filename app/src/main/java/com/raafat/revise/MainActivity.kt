@@ -501,7 +501,7 @@ class MainActivity : AppCompatActivity() {
     var k = 0
     val tutorial = mapOf(R.id.sura_spinner to "اختر السورة من القائمة" ,
         R.id.sliderList to "اختر الآية",
-        R.id.previous_aya to "الرجوع للكلمة السابقة مع النقر المستمر لأكثر من كلمة  (الصفحة السابقة)",
+        R.id.previous_aya to "الرجوع للكلمة السابقة مع النقر المستمر لأكثر من كلمة  (الصفحة السابقة)".plus("\n"),
         R.id.quran_content_tv to "نقر على الشاشة لإظهار الكلمة  (الصفحة التالية)",
         R.id.hide to "إخفاء الآيات",
         R.id.launch to "فتح الآية فى تطبيق قرآن أندرويد"
@@ -510,7 +510,7 @@ class MainActivity : AppCompatActivity() {
 
         val sequence = TapTargetSequence(this@MainActivity)
            .targets(
-                TapTarget.forView(findViewById(id), "\n".plus(string).plus("\n"))
+                TapTarget.forView(findViewById(id), "\n".plus(string))
                             .transparentTarget(true)
                             .textTypeface(getFont())
                             .titleTextSize(30)
