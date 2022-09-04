@@ -510,7 +510,7 @@ class MainActivity : AppCompatActivity() {
 
         val sequence = TapTargetSequence(this@MainActivity)
            .targets(
-                TapTarget.forView(findViewById(id), string)
+                TapTarget.forView(findViewById(id), "\n".plus(string).plus("\n"))
                             .transparentTarget(true)
                             .textTypeface(getFont())
                             .titleTextSize(30)
@@ -536,6 +536,7 @@ class MainActivity : AppCompatActivity() {
 
                 }
             )
+            .considerOuterCircleCanceled(true)
             sequence.start()
 
     }
