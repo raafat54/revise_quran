@@ -32,16 +32,15 @@
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/launch"
             android:layout_gravity="center"
-            android:layout_weight="1"
+            android:layout_weight="0.3"
             android:text="تطبيق قرآن"
             android:textColor="@color/white"
             android:textSize="20sp"
-            android:layout_marginStart="5dp"
             android:fontFamily="@font/uthmanic_hafs"
             android:textStyle="bold"
             android:backgroundTint="@color/cardview_dark_background"
-            android:layout_width="100dp"
-            android:layout_height="50dp"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
         <Spinner
             android:layout_width="0dp"
@@ -49,7 +48,7 @@
             android:layout_weight="8"
             android:id="@+id/sura_spinner"
             android:dropDownWidth="200dp"
-            android:layout_marginStart="25dp"/>
+            android:background="@null"/>
 
 
 
