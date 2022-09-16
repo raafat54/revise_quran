@@ -17,7 +17,7 @@ data class Aya(
     @SerializedName("jozz")
     val jozz: Int,
     @SerializedName("page")
-    val page: Int,
+    val page: String,
     @SerializedName("sura_no")
     val sora: Int,
     @SerializedName("sura_name_ar")

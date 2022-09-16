@@ -1,8 +1,6 @@
 package com.raafat.revise
 
-import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
+import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Color
@@ -38,7 +36,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var spinner: Spinner
     private lateinit var previous: ExtendedFloatingActionButton
 
-     private lateinit var launch: ExtendedFloatingActionButton
+    private lateinit var launch: ExtendedFloatingActionButton
     private lateinit var hide: MaterialSwitch
     private lateinit var count: TextView
     private lateinit var gson: AyaList
@@ -96,7 +94,18 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        val numberOfAyahsForSuraArray = intArrayOf(
+        val numberOfAyahsForQaloonSuraArray = intArrayOf(
+            /*  1 -  14 */ 7, 285, 200, 175, 122, 167, 206, 76, 130, 109, 121, 111, 44, 54,
+            /* 15 -  28 */ 99, 128, 110, 105, 99, 134, 111, 76, 119, 62, 77, 226, 95, 88,
+            /* 29 -  42 */ 69, 59, 33, 30, 73, 54, 46, 82, 182, 86, 72, 84, 53, 50,
+            /* 43 -  56 */ 89, 56, 36, 34, 39, 29, 18, 45, 60, 47, 61, 55, 77, 99,
+            /* 57 -  70 */ 28, 21, 24, 13, 14, 11, 11, 18, 12, 12, 31, 52, 52, 44,
+            /* 71 -  84 */ 30, 28, 18, 55, 39, 31, 50, 40, 45, 42, 29, 19, 36, 25,
+            /* 85 -  98 */ 22, 17, 19, 26, 32, 20, 15, 21, 11, 8, 8, 20, 5, 8,
+            /* 99 - 114 */ 9, 11, 10, 8, 3, 9, 5, 5, 6, 3, 6, 3, 5, 4, 5, 6
+        )
+
+        val numberOfAyahsForHafsSuraArray = intArrayOf(
             /*  1 -  14 */ 7, 286, 200, 176, 120, 165, 206, 75, 129, 109, 123, 111, 43, 52,
             /* 15 -  28 */ 99, 128, 111, 110, 98, 135, 112, 78, 118, 64, 77, 227, 93, 88,
             /* 29 -  42 */ 69, 60, 34, 30, 73, 54, 45, 83, 182, 88, 75, 85, 54, 53,
@@ -113,7 +122,7 @@ class MainActivity : AppCompatActivity() {
         var json: String
 
         runBlocking {
-            json = applicationContext.assets.open("data.json")
+            json = applicationContext.assets.open("data-qaloun.json")
             .bufferedReader()
             .use { it.readText() }
         }
@@ -154,7 +163,7 @@ class MainActivity : AppCompatActivity() {
         slider.value = ayaNo.toFloat()
 
 
-        slider.valueTo = numberOfAyahsForSuraArray[sora].toFloat()
+        slider.valueTo = numberOfAyahsForQaloonSuraArray[sora].toFloat()
 
 
         fun nextClicked(){
@@ -162,7 +171,7 @@ class MainActivity : AppCompatActivity() {
                 textView.next(++i)
 
             else{
-                if(ayaNo < numberOfAyahsForSuraArray[sora - 1]) {
+                if(ayaNo < numberOfAyahsForQaloonSuraArray[sora - 1]) {
                     ayaNo++
                     slider.value = ayaNo.toFloat()
 
@@ -245,7 +254,7 @@ class MainActivity : AppCompatActivity() {
                         hide.isChecked = false
                         hideAya = false
 
-                        slider.valueTo = numberOfAyahsForSuraArray[position].toFloat()
+                        slider.valueTo = numberOfAyahsForQaloonSuraArray[position].toFloat()
 
                     } else {
                         clicked = true
@@ -256,7 +265,7 @@ class MainActivity : AppCompatActivity() {
                         hideAya = false
 
 
-                        slider.valueTo = numberOfAyahsForSuraArray[position].toFloat()
+                        slider.valueTo = numberOfAyahsForQaloonSuraArray[position].toFloat()
 
                     }
                 }

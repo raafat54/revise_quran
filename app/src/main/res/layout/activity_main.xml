@@ -133,7 +133,7 @@
         android:layoutDirection="rtl"
         android:textDirection="rtl"
         android:gravity="top|center"
-        android:fontFamily="@font/hafs_smart"
+        android:fontFamily="@font/uthmanic_qaloun"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
         android:paddingBottom="12dp"

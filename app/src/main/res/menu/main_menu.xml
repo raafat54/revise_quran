@@ -4,4 +4,5 @@
     <item
         android:id="@+id/tutorial"
         android:title="شرح الاستخدام"/>
+
 </menu>
