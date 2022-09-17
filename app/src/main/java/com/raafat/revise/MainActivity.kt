@@ -44,8 +44,6 @@ class MainActivity : AppCompatActivity() {
 
     private var hideAya = false
 
-    private var rwaya = 1
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -605,21 +603,30 @@ class MainActivity : AppCompatActivity() {
             menuInflater.inflate(R.menu.main_menu, menu)
             setOnMenuItemClickListener {
                 val putSharedPrefs: SharedPreferences = getSharedPreferences(packageName, MODE_PRIVATE)
+                val currentRwaya = putSharedPrefs.getInt("rwaya", 1)
                 when (it.itemId) {
                     R.id.tutorial -> {
                         showTutorial()
                         true
                     }
                     R.id.hafs -> {
-                        rwaya = 1
-                        ProcessPhoenix.triggerRebirth(this@MainActivity)
-                        putSharedPrefs.edit().putInt("rwaya", rwaya).apply()
+                        if( currentRwaya == 2) {
+                            ProcessPhoenix.triggerRebirth(this@MainActivity)
+                            putSharedPrefs.edit().putInt("rwaya", 1).apply()
+                        }
+                        else
+                            Toast.makeText(this@MainActivity, "اختر رواية أخرى", Toast.LENGTH_SHORT).show()
+
                         true
                     }
                     R.id.qaloun -> {
-                        rwaya = 2
-                        ProcessPhoenix.triggerRebirth(this@MainActivity)
-                        putSharedPrefs.edit().putInt("rwaya", rwaya).apply()
+                        if(currentRwaya == 1) {
+                            ProcessPhoenix.triggerRebirth(this@MainActivity)
+                            putSharedPrefs.edit().putInt("rwaya", 2).apply()
+                        }
+                        else
+                            Toast.makeText(this@MainActivity, "اختر رواية أخرى", Toast.LENGTH_SHORT).show()
+
                         true
                     }
                     else -> {
