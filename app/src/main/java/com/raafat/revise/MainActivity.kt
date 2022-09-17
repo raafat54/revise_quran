@@ -604,6 +604,14 @@ class MainActivity : AppCompatActivity() {
             setOnMenuItemClickListener {
                 val putSharedPrefs: SharedPreferences = getSharedPreferences(packageName, MODE_PRIVATE)
                 val currentRwaya = putSharedPrefs.getInt("rwaya", 1)
+                if (currentRwaya == 2){
+                    menu.findItem(R.id.hafs).isEnabled = true
+                    menu.findItem(R.id.qaloun).isEnabled = false
+                }
+                else{
+                    menu.findItem(R.id.hafs).isEnabled = false
+                    menu.findItem(R.id.qaloun).isEnabled = true
+                }
                 when (it.itemId) {
                     R.id.tutorial -> {
                         showTutorial()
@@ -614,8 +622,6 @@ class MainActivity : AppCompatActivity() {
                             ProcessPhoenix.triggerRebirth(this@MainActivity)
                             putSharedPrefs.edit().putInt("rwaya", 1).apply()
                         }
-                        else
-                            Toast.makeText(this@MainActivity, "اختر رواية أخرى", Toast.LENGTH_SHORT).show()
 
                         true
                     }
@@ -624,8 +630,6 @@ class MainActivity : AppCompatActivity() {
                             ProcessPhoenix.triggerRebirth(this@MainActivity)
                             putSharedPrefs.edit().putInt("rwaya", 2).apply()
                         }
-                        else
-                            Toast.makeText(this@MainActivity, "اختر رواية أخرى", Toast.LENGTH_SHORT).show()
 
                         true
                     }
