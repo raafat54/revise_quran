@@ -25,6 +25,7 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.slider.Slider
 import com.google.gson.Gson
+import com.jakewharton.processphoenix.ProcessPhoenix
 import com.raafat.revise.data.AyaList
 import kotlinx.coroutines.runBlocking
 
@@ -43,6 +44,8 @@ class MainActivity : AppCompatActivity() {
 
     private var hideAya = false
 
+    private var rwaya = 1
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +53,10 @@ class MainActivity : AppCompatActivity() {
 
         val getSharedPrefs: SharedPreferences = getSharedPreferences(packageName, MODE_PRIVATE)
         val savedSura = getSharedPrefs.getInt("spinner", 0)
-        val savedAya = getSharedPrefs.getFloat("slider", 1f)
+        var savedAya = getSharedPrefs.getFloat("slider", 1f)
+        val savedRwaya = getSharedPrefs.getInt("rwaya", 1)
+
+
 
         val PREFS_NAME = "MyPrefsFile"
 
@@ -116,13 +122,49 @@ class MainActivity : AppCompatActivity() {
             /* 99 - 114 */ 8, 11, 11, 8, 3, 9, 5, 4, 7, 3, 6, 3, 5, 4, 5, 6
         )
 
+
+        var numberofAyahs = numberOfAyahsForHafsSuraArray
+
+        var typeface = ResourcesCompat.getFont(this, R.font.hafs_smart)
+
+        var file = "data"
+
+        when(savedRwaya){
+            1 -> {
+                numberofAyahs = numberOfAyahsForHafsSuraArray
+
+                typeface = ResourcesCompat.getFont(this, R.font.hafs_smart)
+
+                file = "data"
+
+                if (savedAya > numberOfAyahsForHafsSuraArray[savedSura].toFloat())
+                    savedAya = numberOfAyahsForHafsSuraArray[savedSura].toFloat()
+
+            }
+            2 -> {
+                numberofAyahs = numberOfAyahsForQaloonSuraArray
+
+                typeface = ResourcesCompat.getFont(this, R.font.uthmanic_qaloun)
+
+                file = "data-qaloun"
+
+                if (savedAya > numberOfAyahsForQaloonSuraArray[savedSura].toFloat())
+                    savedAya = numberOfAyahsForQaloonSuraArray[savedSura].toFloat()
+
+
+            }
+
+        }
+
+
         textView = findViewById(R.id.quran_content_tv)
+        textView.typeface = typeface
 
 
         var json: String
 
         runBlocking {
-            json = applicationContext.assets.open("data-qaloun.json")
+            json = applicationContext.assets.open("$file.json")
             .bufferedReader()
             .use { it.readText() }
         }
@@ -163,7 +205,7 @@ class MainActivity : AppCompatActivity() {
         slider.value = ayaNo.toFloat()
 
 
-        slider.valueTo = numberOfAyahsForQaloonSuraArray[sora].toFloat()
+        slider.valueTo = numberofAyahs[sora].toFloat()
 
 
         fun nextClicked(){
@@ -171,7 +213,7 @@ class MainActivity : AppCompatActivity() {
                 textView.next(++i)
 
             else{
-                if(ayaNo < numberOfAyahsForQaloonSuraArray[sora - 1]) {
+                if(ayaNo < numberofAyahs[sora - 1]) {
                     ayaNo++
                     slider.value = ayaNo.toFloat()
 
@@ -254,7 +296,7 @@ class MainActivity : AppCompatActivity() {
                         hide.isChecked = false
                         hideAya = false
 
-                        slider.valueTo = numberOfAyahsForQaloonSuraArray[position].toFloat()
+                        slider.valueTo = numberofAyahs[position].toFloat()
 
                     } else {
                         clicked = true
@@ -265,7 +307,7 @@ class MainActivity : AppCompatActivity() {
                         hideAya = false
 
 
-                        slider.valueTo = numberOfAyahsForQaloonSuraArray[position].toFloat()
+                        slider.valueTo = numberofAyahs[position].toFloat()
 
                     }
                 }
@@ -477,6 +519,7 @@ class MainActivity : AppCompatActivity() {
         val putSharedPrefs: SharedPreferences = getSharedPreferences(packageName, MODE_PRIVATE)
         putSharedPrefs.edit().putInt("spinner", spinner.selectedItemPosition).apply()
         putSharedPrefs.edit().putFloat("slider", slider.value).apply()
+
     }
 
     private fun startNewActivity(sora: Int, ayaNo: Int) {
@@ -513,7 +556,9 @@ class MainActivity : AppCompatActivity() {
         R.id.previous_aya to "الرجوع للكلمة السابقة مع النقر المستمر لأكثر من كلمة  (الصفحة السابقة)".plus("\n"),
         R.id.dummy to "نقر على الشاشة لإظهار الكلمة  (الصفحة التالية)",
         R.id.hide to "إخفاء الآيات",
-        R.id.launch to "فتح الآية فى تطبيق قرآن أندرويد"
+        R.id.launch to "فتح الآية فى تطبيق قرآن أندرويد",
+        R.id.menu to "عرض قائمة الروايات و إعادة الشرح"
+
     )
     private fun newSequence(id : Int, string: String){
 
@@ -539,7 +584,7 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     override fun onSequenceCanceled(lastTarget: TapTarget?) {
-                        if (k < 5) ++k else return
+                        if (k < 6) ++k else return
                         newSequence( tutorial.keys.toIntArray()[k], tutorial.values.toTypedArray()[k])
                     }
 
@@ -559,9 +604,22 @@ class MainActivity : AppCompatActivity() {
         .run {
             menuInflater.inflate(R.menu.main_menu, menu)
             setOnMenuItemClickListener {
+                val putSharedPrefs: SharedPreferences = getSharedPreferences(packageName, MODE_PRIVATE)
                 when (it.itemId) {
                     R.id.tutorial -> {
                         showTutorial()
+                        true
+                    }
+                    R.id.hafs -> {
+                        rwaya = 1
+                        ProcessPhoenix.triggerRebirth(this@MainActivity)
+                        putSharedPrefs.edit().putInt("rwaya", rwaya).apply()
+                        true
+                    }
+                    R.id.qaloun -> {
+                        rwaya = 2
+                        ProcessPhoenix.triggerRebirth(this@MainActivity)
+                        putSharedPrefs.edit().putInt("rwaya", rwaya).apply()
                         true
                     }
                     else -> {

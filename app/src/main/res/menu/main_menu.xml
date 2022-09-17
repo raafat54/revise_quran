@@ -5,4 +5,18 @@
         android:id="@+id/tutorial"
         android:title="شرح الاستخدام"/>
 
+    <item android:visible="true" android:id="@+id/rwaya"
+        android:titleCondensed="عرض رواية"
+        android:title="عرض رواية"
+        android:enabled="true">
+        <menu>
+            <group>
+                android:checkableBehavior="single">
+                <item android:id="@+id/hafs"
+                    android:title="حفص عن عاصم"/>
+                <item android:id="@+id/qaloun"
+                    android:title="قالون عن نافع"/>
+            </group>
+        </menu>
+    </item>
 </menu>
