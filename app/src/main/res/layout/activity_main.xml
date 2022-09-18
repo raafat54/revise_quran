@@ -29,18 +29,18 @@
             android:src="@drawable/ic_menu"
             android:backgroundTint="@color/gray"
             android:contentDescription="menu" />
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/launch"
-            android:layout_gravity="center"
-            android:layout_weight="0.3"
-            android:text="تطبيق قرآن"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:fontFamily="@font/uthmanic_hafs"
-            android:textStyle="bold"
-            android:backgroundTint="@color/cardview_dark_background"
+
+        <TextView
+            android:id="@+id/count"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            tools:text="52"
+            android:textAlignment="center"
+            android:layout_marginStart="18dp"
+            android:fontFamily="@font/uthmanic_hafs"
+            android:textSize="20sp"/>
 
         <Spinner
             android:layout_width="0dp"
@@ -74,6 +74,7 @@
             android:layout_height="0dp"
             android:layout_weight="7"
             android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
             app:thumbRadius="20dp"
             android:layoutDirection="rtl"
             app:trackColorActive="@color/white"
@@ -86,18 +87,7 @@
             app:labelBehavior="gone"
             tools:valueTo="7" />
 
-        <TextView
-            android:id="@+id/count"
-            android:layout_width="55dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            tools:text="52"
-            android:textAlignment="center"
-            android:layout_marginStart="18dp"
-            android:fontFamily="@font/uthmanic_hafs"
-            android:textSize="20sp"/>
+
     </LinearLayout>
 
 

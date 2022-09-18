@@ -16,6 +16,8 @@
                     android:title="حفص عن عاصم"/>
                 <item android:id="@+id/qaloun"
                     android:title="قالون عن نافع"/>
+                <item android:id="@+id/warsh"
+                    android:title="ورش عن نافع"/>
             </group>
         </menu>
     </item>

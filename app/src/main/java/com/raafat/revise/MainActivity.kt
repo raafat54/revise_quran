@@ -37,7 +37,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var spinner: Spinner
     private lateinit var previous: ExtendedFloatingActionButton
 
-    private lateinit var launch: ExtendedFloatingActionButton
     private lateinit var hide: MaterialSwitch
     private lateinit var count: TextView
     private lateinit var gson: AyaList
@@ -69,7 +68,6 @@ class MainActivity : AppCompatActivity() {
         }
         hide = findViewById(R.id.hide)
 
-        launch = findViewById(R.id.launch)
 
         menu = findViewById(R.id.menu)
 
@@ -84,14 +82,7 @@ class MainActivity : AppCompatActivity() {
         val drawable = R.drawable.ic_thumb
         slider.setCustomThumbDrawable(drawable)
 
-        launch.setOnClickListener {
-            val appisFound = isAppInstalled(this@MainActivity, "com.quran.labs.androidquran")
-            if(appisFound) {
-                startNewActivity(spinner.selectedItemPosition + 1, slider.value.toInt())
-            }else{
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.quran.labs.androidquran")))
-            }
-        }
+
 
         menu.setOnClickListener {
             showPopupMenu(menu)
@@ -144,7 +135,19 @@ class MainActivity : AppCompatActivity() {
 
                 typeface = ResourcesCompat.getFont(this, R.font.uthmanic_qaloun)
 
-                file = "data-qaloun"
+                file = "qaloun-data"
+
+                if (savedAya > numberOfAyahsForQaloonSuraArray[savedSura].toFloat())
+                    savedAya = numberOfAyahsForQaloonSuraArray[savedSura].toFloat()
+
+
+            }
+            3 -> {
+                numberofAyahs = numberOfAyahsForQaloonSuraArray
+
+                typeface = ResourcesCompat.getFont(this, R.font.uthmanic_warsh)
+
+                file = "warsh-data"
 
                 if (savedAya > numberOfAyahsForQaloonSuraArray[savedSura].toFloat())
                     savedAya = numberOfAyahsForQaloonSuraArray[savedSura].toFloat()
@@ -554,7 +557,6 @@ class MainActivity : AppCompatActivity() {
         R.id.previous_aya to "الرجوع للكلمة السابقة مع النقر المستمر لأكثر من كلمة  (الصفحة السابقة)".plus("\n"),
         R.id.dummy to "نقر على الشاشة لإظهار الكلمة  (الصفحة التالية)",
         R.id.hide to "إخفاء الآيات",
-        R.id.launch to "فتح الآية فى تطبيق قرآن أندرويد",
         R.id.menu to "عرض قائمة الروايات و إعادة الشرح"
 
     )
@@ -582,7 +584,7 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     override fun onSequenceCanceled(lastTarget: TapTarget?) {
-                        if (k < 6) ++k else return
+                        if (k < 5) ++k else return
                         newSequence( tutorial.keys.toIntArray()[k], tutorial.values.toTypedArray()[k])
                     }
 
@@ -604,13 +606,22 @@ class MainActivity : AppCompatActivity() {
             setOnMenuItemClickListener {
                 val putSharedPrefs: SharedPreferences = getSharedPreferences(packageName, MODE_PRIVATE)
                 val currentRwaya = putSharedPrefs.getInt("rwaya", 1)
-                if (currentRwaya == 2){
-                    menu.findItem(R.id.hafs).isEnabled = true
-                    menu.findItem(R.id.qaloun).isEnabled = false
-                }
-                else{
-                    menu.findItem(R.id.hafs).isEnabled = false
-                    menu.findItem(R.id.qaloun).isEnabled = true
+                when (currentRwaya) {
+                    2 -> {
+                        menu.findItem(R.id.hafs).isEnabled = true
+                        menu.findItem(R.id.qaloun).isEnabled = false
+                        menu.findItem(R.id.warsh).isEnabled = true
+                    }
+                    1 -> {
+                        menu.findItem(R.id.hafs).isEnabled = false
+                        menu.findItem(R.id.qaloun).isEnabled = true
+                        menu.findItem(R.id.warsh).isEnabled = true
+                    }
+                    else -> {
+                        menu.findItem(R.id.hafs).isEnabled = true
+                        menu.findItem(R.id.qaloun).isEnabled = true
+                        menu.findItem(R.id.warsh).isEnabled = false
+                    }
                 }
                 when (it.itemId) {
                     R.id.tutorial -> {
@@ -618,7 +629,7 @@ class MainActivity : AppCompatActivity() {
                         true
                     }
                     R.id.hafs -> {
-                        if( currentRwaya == 2) {
+                        if( currentRwaya == 2 || currentRwaya == 3) {
                             ProcessPhoenix.triggerRebirth(this@MainActivity)
                             putSharedPrefs.edit().putInt("rwaya", 1).apply()
                         }
@@ -626,9 +637,17 @@ class MainActivity : AppCompatActivity() {
                         true
                     }
                     R.id.qaloun -> {
-                        if(currentRwaya == 1) {
+                        if(currentRwaya == 1 || currentRwaya == 3) {
                             ProcessPhoenix.triggerRebirth(this@MainActivity)
                             putSharedPrefs.edit().putInt("rwaya", 2).apply()
+                        }
+
+                        true
+                    }
+                    R.id.warsh -> {
+                        if(currentRwaya == 1 || currentRwaya == 2) {
+                            ProcessPhoenix.triggerRebirth(this@MainActivity)
+                            putSharedPrefs.edit().putInt("rwaya", 3).apply()
                         }
 
                         true
