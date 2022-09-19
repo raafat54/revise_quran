@@ -553,7 +553,7 @@ class MainActivity : AppCompatActivity() {
 
     var k = 0
     val tutorial = mapOf(R.id.sura_spinner to "اختر السورة من القائمة" ,
-        R.id.sliderList to "اختر الآية",
+        R.id.sliderList to "\n اختر الآية",
         R.id.previous_aya to "الرجوع للكلمة السابقة مع النقر المستمر لأكثر من كلمة  (الصفحة السابقة)".plus("\n"),
         R.id.dummy to "نقر على الشاشة لإظهار الكلمة  (الصفحة التالية)",
         R.id.hide to "إخفاء الآيات",
