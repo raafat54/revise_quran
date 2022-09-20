@@ -557,7 +557,7 @@ class MainActivity : AppCompatActivity() {
         R.id.previous_aya to "الرجوع للكلمة السابقة مع النقر المستمر لأكثر من كلمة  (الصفحة السابقة)".plus("\n"),
         R.id.dummy to "نقر على الشاشة لإظهار الكلمة  (الصفحة التالية)",
         R.id.hide to "إخفاء الآيات",
-        R.id.menu to "عرض قائمة الروايات و إعادة الشرح"
+        R.id.menu to "عرض قائمة الروايات: حفص - قالون - ورش"
 
     )
     private fun newSequence(id : Int, string: String){
