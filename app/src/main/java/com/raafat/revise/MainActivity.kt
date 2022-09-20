@@ -1,11 +1,10 @@
 package com.raafat.revise
 
+import android.R.attr.label
 import android.content.*
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Typeface
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
@@ -208,6 +207,14 @@ class MainActivity : AppCompatActivity() {
 
         slider.valueTo = numberofAyahs[sora].toFloat()
 
+//        val reader = StringBuilder()
+//        for(i in 1..285)
+//            reader.append(gson.filter { aya -> aya.ayaNo == i }
+//                .filter { aya -> aya.sora == sora + 1 }[0].ayaText.dropLast(2).plus(" ($i) ").replace(" ", ""))
+//
+//        val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+//        val clip = ClipData.newPlainText(label.toString(), reader.toString())
+//        clipboard.setPrimaryClip(clip)
 
         fun nextClicked(){
             if (i < textView.size() - 1 )
@@ -521,27 +528,6 @@ class MainActivity : AppCompatActivity() {
         putSharedPrefs.edit().putInt("spinner", spinner.selectedItemPosition).apply()
         putSharedPrefs.edit().putFloat("slider", slider.value).apply()
 
-    }
-
-    private fun startNewActivity(sora: Int, ayaNo: Int) {
-        Log.i("TAG", "showPopupMenu: ${sora} , ${ayaNo}")
-
-        val intent =  Intent()
-        intent.action = Intent.ACTION_VIEW
-        intent.data = Uri.parse("quran://$sora/$ayaNo")
-        startActivity(intent)
-
-    }
-
-    private fun isAppInstalled(context: Context, packageName: String?): Boolean {
-        return try {
-            if (packageName != null) {
-                context.packageManager.getApplicationInfo(packageName, 0)
-            }
-            true
-        } catch (e: PackageManager.NameNotFoundException) {
-            false
-        }
     }
 
 
