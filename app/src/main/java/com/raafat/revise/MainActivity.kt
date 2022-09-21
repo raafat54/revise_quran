@@ -132,7 +132,7 @@ class MainActivity : AppCompatActivity() {
             2 -> {
                 numberofAyahs = numberOfAyahsForQaloonSuraArray
 
-                typeface = ResourcesCompat.getFont(this, R.font.uthmanic_qaloun)
+                typeface = ResourcesCompat.getFont(this, R.font.qaloun)
 
                 file = "qaloun-data"
 
@@ -144,7 +144,7 @@ class MainActivity : AppCompatActivity() {
             3 -> {
                 numberofAyahs = numberOfAyahsForQaloonSuraArray
 
-                typeface = ResourcesCompat.getFont(this, R.font.uthmanic_warsh)
+                typeface = ResourcesCompat.getFont(this, R.font.warsh)
 
                 file = "warsh-data"
 
