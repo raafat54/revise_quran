@@ -124,11 +124,8 @@
             android:layoutDirection="rtl"
             android:textDirection="rtl"
             android:gravity="top|center"
-            android:fontFamily="@font/uthmanic_qaloun"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:paddingBottom="12dp"
-            android:paddingTop="32dp"
+            android:layout_margin="12dp"
+            android:padding="6dp"
             android:textColor="@color/white"
             android:textSize="55sp" />
 

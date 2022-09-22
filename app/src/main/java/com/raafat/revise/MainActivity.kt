@@ -1,6 +1,5 @@
 package com.raafat.revise
 
-import android.R.attr.label
 import android.content.*
 import android.content.res.Configuration
 import android.graphics.Color
@@ -11,7 +10,6 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.*
@@ -50,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         val getSharedPrefs: SharedPreferences = getSharedPreferences(packageName, MODE_PRIVATE)
         val savedSura = getSharedPrefs.getInt("spinner", 0)
         var savedAya = getSharedPrefs.getFloat("slider", 1f)
-        val savedRwaya = getSharedPrefs.getInt("rwaya", 1)
+        val savedRwaya = 1
 
 
 
@@ -129,30 +127,6 @@ class MainActivity : AppCompatActivity() {
                     savedAya = numberOfAyahsForHafsSuraArray[savedSura].toFloat()
 
             }
-            2 -> {
-                numberofAyahs = numberOfAyahsForQaloonSuraArray
-
-                typeface = ResourcesCompat.getFont(this, R.font.qaloun)
-
-                file = "qaloun-data"
-
-                if (savedAya > numberOfAyahsForQaloonSuraArray[savedSura].toFloat())
-                    savedAya = numberOfAyahsForQaloonSuraArray[savedSura].toFloat()
-
-
-            }
-            3 -> {
-                numberofAyahs = numberOfAyahsForQaloonSuraArray
-
-                typeface = ResourcesCompat.getFont(this, R.font.warsh)
-
-                file = "warsh-data"
-
-                if (savedAya > numberOfAyahsForQaloonSuraArray[savedSura].toFloat())
-                    savedAya = numberOfAyahsForQaloonSuraArray[savedSura].toFloat()
-
-
-            }
 
         }
 
@@ -207,14 +181,7 @@ class MainActivity : AppCompatActivity() {
 
         slider.valueTo = numberofAyahs[sora].toFloat()
 
-//        val reader = StringBuilder()
-//        for(i in 1..285)
-//            reader.append(gson.filter { aya -> aya.ayaNo == i }
-//                .filter { aya -> aya.sora == sora + 1 }[0].ayaText.dropLast(2).plus(" ($i) ").replace(" ", ""))
-//
-//        val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-//        val clip = ClipData.newPlainText(label.toString(), reader.toString())
-//        clipboard.setPrimaryClip(clip)
+
 
         fun nextClicked(){
             if (i < textView.size() - 1 )

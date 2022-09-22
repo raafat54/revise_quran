@@ -5,7 +5,7 @@
         android:id="@+id/tutorial"
         android:title="شرح الاستخدام"/>
 
-    <item android:visible="true" android:id="@+id/rwaya"
+    <item android:visible="false" android:id="@+id/rwaya"
         android:titleCondensed="عرض رواية"
         android:title="عرض رواية"
         android:enabled="true">
