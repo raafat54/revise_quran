@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Typeface
@@ -15,6 +16,7 @@ import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.view.ContextThemeWrapper
 import android.view.MotionEvent
 import android.view.View
 import android.widget.*
@@ -66,6 +68,7 @@ class MainActivity : AppCompatActivity() {
             settings.edit().putBoolean("my_first_time", false).apply()
         }
         hide = findViewById(R.id.hide)
+        val defaultThumb = hide.thumbTintList
 
         launch = findViewById(R.id.launch)
 
@@ -226,6 +229,7 @@ class MainActivity : AppCompatActivity() {
 
                         if(slider.value == 1f){
                             ayaNo = 1
+                            (view as TextView?)?.text = "سورة ".plus(parent.selectedItem.toString().substringAfter(" "))
 
                             list = gson.filter { aya -> aya.ayaNo == ayaNo }
                                 .filter { aya -> aya.sora == sora }[0].ayaText.split(" ").toList()
@@ -243,6 +247,7 @@ class MainActivity : AppCompatActivity() {
                         }
 
                         hide.isChecked = false
+                hide.thumbTintList = defaultThumb
                         hideAya = false
 
                         slider.valueTo = numberOfAyahsForSuraArray[position].toFloat()
@@ -250,9 +255,11 @@ class MainActivity : AppCompatActivity() {
                     } else {
                         clicked = true
                         sora = position + 1
+                        (view as TextView?)?.text = "سورة ".plus(parent.selectedItem.toString().substringAfter(" "))
 
 
                         hide.isChecked = false
+                hide.thumbTintList = defaultThumb
                         hideAya = false
 
 
@@ -273,6 +280,7 @@ class MainActivity : AppCompatActivity() {
                 ayaNo = slider.value.toInt()
 
                 hide.isChecked = false
+                hide.thumbTintList = defaultThumb
                 hideAya = false
 
                 if(slider.value == 1f){
@@ -304,6 +312,7 @@ class MainActivity : AppCompatActivity() {
                 ayaNo = slider.value.toInt()
 
                 hide.isChecked = false
+                hide.thumbTintList = defaultThumb
                 hideAya = false
 
                 if(slider.value == 1f){
@@ -415,12 +424,33 @@ class MainActivity : AppCompatActivity() {
             if (hideAya) {
                 hide()
                 hide.isChecked = true
+                hide.thumbTintList = ColorStateList.valueOf(Color.WHITE)
             }
             else {
                 textView.next(i)
                 hide.isChecked = false
+                hide.thumbTintList = defaultThumb
             }
         }
+
+        hide.setOnTouchListener(object : View.OnTouchListener{
+            override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+                if (event?.action == MotionEvent.ACTION_UP) {
+                    hideAya = !hideAya
+                    if (hideAya) {
+                        hide()
+                        hide.isChecked = true
+                        hide.thumbTintList = ColorStateList.valueOf(Color.WHITE)
+                    } else {
+                        textView.next(i)
+                        hide.isChecked = false
+                        hide.thumbTintList = defaultThumb
+                    }
+                }
+                return true
+            }
+
+        })
 
 
 
@@ -501,8 +531,8 @@ class MainActivity : AppCompatActivity() {
     var k = 0
     val tutorial = mapOf(R.id.sura_spinner to "اختر السورة من القائمة" ,
         R.id.sliderList to "اختر الآية",
-        R.id.previous_aya to "الرجوع للكلمة السابقة مع النقر المستمر لأكثر من كلمة  (الصفحة السابقة)".plus("\n"),
-        R.id.dummy to "نقر على الشاشة لإظهار الكلمة  (الصفحة التالية)",
+        R.id.previous_aya to "الرجوع للكلمة السابقة مع النقر المستمر لأكثر من كلمة  (الآية السابقة)".plus("\n"),
+        R.id.dummy to "نقر على الشاشة لإظهار الكلمة  (الآية التالية)",
         R.id.hide to "إخفاء الآيات",
         R.id.launch to "فتح الآية فى تطبيق قرآن أندرويد"
     )
@@ -546,7 +576,9 @@ class MainActivity : AppCompatActivity() {
         newSequence( tutorial.keys.toIntArray()[k], tutorial.values.toTypedArray()[k])
     }
 
-    private fun showPopupMenu(view: View) = PopupMenu(view.context, view)
+    val context = ContextThemeWrapper(this@MainActivity, R.style.popupMenuStyle)
+
+    private fun showPopupMenu(view: View) = PopupMenu(context, view)
         .run {
             menuInflater.inflate(R.menu.main_menu, menu)
             setOnMenuItemClickListener {

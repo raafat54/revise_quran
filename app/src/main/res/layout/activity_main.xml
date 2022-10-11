@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="8"
             android:id="@+id/sura_spinner"
-            android:dropDownWidth="200dp"
+            android:dropDownWidth="match_parent"
             android:background="@null"/>
 
 
@@ -179,7 +179,6 @@
             android:fontFamily="@font/uthmanic_hafs"
             app:iconSize="35dp"
             android:layout_marginStart="15dp"
-            app:icon="@drawable/ic_previous"
             app:iconTint="@color/white"
             android:backgroundTint="@color/cardview_dark_background"
             app:fabSize="normal"
