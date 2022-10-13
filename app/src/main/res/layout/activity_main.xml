@@ -13,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="10dp"
+        android:paddingBottom="30dp"
         android:layout_gravity="center"
         android:background="@color/gray"
         android:gravity="center"
@@ -56,49 +57,40 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/sliderList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
+        android:padding="5dp"
         android:layout_gravity="center"
         android:background="@color/gray"
         android:gravity="center"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/linearLayout">
+
+
         <com.google.android.material.slider.Slider
             android:id="@+id/slider"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="7"
-            android:layout_marginEnd="8dp"
-            app:thumbRadius="20dp"
             android:layoutDirection="rtl"
-            app:trackColorActive="@color/white"
-            app:tickColor="@color/white"
-            app:thumbColor="@color/white"
+            android:paddingTop="10dp"
             android:stepSize="1"
             android:value="1"
             android:valueFrom="1"
             app:haloColor="@android:color/transparent"
             app:labelBehavior="gone"
+            app:thumbColor="@color/white"
+            app:thumbRadius="0dp"
+            app:tickColor="@android:color/transparent"
+            app:trackColorActive="@color/white"
+            app:trackHeight="12dp"
             tools:valueTo="7" />
 
-        <TextView
-            android:id="@+id/count"
-            android:layout_width="55dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            tools:text="52"
-            android:textAlignment="center"
-            android:layout_marginStart="18dp"
-            android:fontFamily="@font/uthmanic_hafs"
-            android:textSize="20sp"/>
-    </LinearLayout>
+        </RelativeLayout>
 
 
     <View
@@ -113,6 +105,7 @@
         />
 
     <LinearLayout
+        android:id="@+id/tv_ll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"
@@ -127,22 +120,59 @@
         android:id="@+id/quran_content_tv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
+        android:background="@drawable/border"
+        android:elevation="20dp"
         android:textAlignment="center"
         android:layoutDirection="rtl"
         android:textDirection="rtl"
-        android:gravity="top|center"
+        android:gravity="center|top"
         android:fontFamily="@font/hafs_smart"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
-        android:paddingBottom="12dp"
-        android:paddingTop="32dp"
+        android:paddingBottom="75dp"
+        android:paddingTop="25dp"
         android:textColor="@color/white"
         android:textSize="35sp" />
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:paddingBottom="12dp"
+        android:textColor="@color/white"
+        tools:text="52"
+        app:layout_constraintHorizontal_bias="0.7"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout"
+        app:layout_constraintBottom_toTopOf="@id/sliderList"
+        android:textAlignment="center"
+        android:alpha="0.8"
+        android:layout_marginStart="18dp"
+        android:fontFamily="@font/uthmanic_hafs"
+        android:textSize="20sp"/>
+
+    <TextView
+        android:id="@+id/page"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:paddingBottom="12dp"
+        android:textColor="@color/white"
+        tools:text="52"
+        app:layout_constraintHorizontal_bias="0.3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout"
+        app:layout_constraintBottom_toTopOf="@id/sliderList"
+        android:textAlignment="center"
+        android:layout_marginStart="18dp"
+        android:alpha="0.8"
+        android:fontFamily="@font/uthmanic_hafs"
+        android:textSize="20sp"/>
 
 
     <LinearLayout

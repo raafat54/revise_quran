@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity() {
      private lateinit var launch: ExtendedFloatingActionButton
     private lateinit var hide: MaterialSwitch
     private lateinit var count: TextView
+    private lateinit var page: TextView
     private lateinit var gson: AyaList
 
     private var hideAya = false
@@ -77,13 +78,13 @@ class MainActivity : AppCompatActivity() {
         previous = findViewById(R.id.previous_aya)
 
         count = findViewById(R.id.count)
+        page = findViewById(R.id.page)
 
         spinner = findViewById(R.id.sura_spinner)
         slider = findViewById(R.id.slider)
 
 
-        val drawable = R.drawable.ic_thumb
-        slider.setCustomThumbDrawable(drawable)
+
 
         launch.setOnClickListener {
             val appisFound = isAppInstalled(this@MainActivity, "com.quran.labs.androidquran")
@@ -141,6 +142,12 @@ class MainActivity : AppCompatActivity() {
         var ayaNo = savedAya.toInt()
         slider.value = savedAya
         count.text = "الآية   ".plus(slider.value.toInt().toString())
+
+        var savedPage = gson.filter { aya -> aya.ayaNo == ayaNo }
+            .filter {aya -> aya.sora == sora + 1 }[0].page
+
+        page.text = "صفحة   ".plus(savedPage)
+
 
         var i = 0
         var index = 1
@@ -230,6 +237,12 @@ class MainActivity : AppCompatActivity() {
                         if(slider.value == 1f){
                             ayaNo = 1
                             (view as TextView?)?.text = "سورة ".plus(parent.selectedItem.toString().substringAfter(" "))
+
+                            count.text = "الآية   ".plus(slider.value.toInt().toString())
+                            savedPage = gson.filter { aya -> aya.ayaNo == slider.value.toInt() }
+                                .filter {aya -> aya.sora == spinner.selectedItemPosition + 1 }[0].page
+
+                            page.text = "صفحة   ".plus(savedPage)
 
                             list = gson.filter { aya -> aya.ayaNo == ayaNo }
                                 .filter { aya -> aya.sora == sora }[0].ayaText.split(" ").toList()
@@ -343,6 +356,10 @@ class MainActivity : AppCompatActivity() {
 
         slider.addOnChangeListener { slider, value, fromUser ->
             count.text = "الآية   ".plus(slider.value.toInt().toString())
+            savedPage = gson.filter { aya -> aya.ayaNo == slider.value.toInt() }
+                .filter {aya -> aya.sora == spinner.selectedItemPosition + 1 }[0].page
+
+            page.text = "صفحة   ".plus(savedPage)
         }
 
 
@@ -422,6 +439,10 @@ class MainActivity : AppCompatActivity() {
         hide.setOnClickListener{
             hideAya = !hideAya
             if (hideAya) {
+                if (textView.size() > 1 && i > 0) {
+                    i = 0
+                    textView.next(i)
+                }
                 hide()
                 hide.isChecked = true
                 hide.thumbTintList = ColorStateList.valueOf(Color.WHITE)
@@ -438,6 +459,10 @@ class MainActivity : AppCompatActivity() {
                 if (event?.action == MotionEvent.ACTION_UP) {
                     hideAya = !hideAya
                     if (hideAya) {
+                        if (textView.size() > 1 && i > 0) {
+                            i = 0
+                            textView.next(i)
+                        }
                         hide()
                         hide.isChecked = true
                         hide.thumbTintList = ColorStateList.valueOf(Color.WHITE)
@@ -530,10 +555,9 @@ class MainActivity : AppCompatActivity() {
 
     var k = 0
     val tutorial = mapOf(R.id.sura_spinner to "اختر السورة من القائمة" ,
-        R.id.sliderList to "اختر الآية",
-        R.id.previous_aya to "الرجوع للكلمة السابقة مع النقر المستمر لأكثر من كلمة  (الآية السابقة)".plus("\n"),
-        R.id.dummy to "نقر على الشاشة لإظهار الكلمة  (الآية التالية)",
-        R.id.hide to "إخفاء الآيات",
+        R.id.previous_aya to "الآية السابقة",
+        R.id.dummy to "نقر على الشاشة لإظهار الآية التالية",
+        R.id.hide to " إخفاء الآيات للتسميع",
         R.id.launch to "فتح الآية فى تطبيق قرآن أندرويد"
     )
     private fun newSequence(id : Int, string: String){
@@ -560,7 +584,7 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     override fun onSequenceCanceled(lastTarget: TapTarget?) {
-                        if (k < 5) ++k else return
+                        if (k < 4) ++k else return
                         newSequence( tutorial.keys.toIntArray()[k], tutorial.values.toTypedArray()[k])
                     }
 
