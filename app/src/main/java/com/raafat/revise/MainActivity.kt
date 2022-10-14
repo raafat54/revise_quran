@@ -179,6 +179,11 @@ class MainActivity : AppCompatActivity() {
             textView.visibility = View.VISIBLE
         }
 
+        if(savedAya == 1f)
+            if (spinner.selectedItemPosition + 1 != 1 &&
+                spinner.selectedItemPosition + 1 != 9)
+                textViewPaddingFirst()
+
         fun nextClicked(){
 
             if (i < textView.size() - 1 ){
@@ -324,6 +329,11 @@ class MainActivity : AppCompatActivity() {
                 if(slider.value == 1f){
                     ayaNo = 1
 
+                    if(sora != 1 && sora != 9) {
+                        basmalah.visibility = View.VISIBLE
+                        textView.visibility = View.GONE
+                    }
+
                     list = gson.filter { aya -> aya.ayaNo == ayaNo }
                         .filter { aya -> aya.sora == sora }[0].ayaText.split(" ").toList()
 
@@ -356,6 +366,11 @@ class MainActivity : AppCompatActivity() {
 
                 if(slider.value == 1f){
                     ayaNo = 1
+
+                    if(sora != 1 && sora != 9) {
+                        basmalah.visibility = View.VISIBLE
+                        textView.visibility = View.GONE
+                    }
 
                     list = gson.filter { aya -> aya.ayaNo == ayaNo }
                         .filter { aya -> aya.sora == sora }[0].ayaText.split(" ").toList()

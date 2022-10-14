@@ -97,17 +97,15 @@
         android:id="@+id/basmalah"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/gray"
+        android:background="@drawable/border"
         android:layout_marginBottom="100dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/sliderList"
-        app:layout_constraintVertical_bias="0.1"
-        android:text="g"
-        android:gravity="center"
+        android:text=""
         android:textAlignment="center"
-        android:textSize="70dp"
+        android:textSize="60dp"
         android:translationZ="55dp"
         android:fontFamily="@font/basmalah"
         android:textColor="@color/white"
@@ -167,16 +165,15 @@
         android:paddingBottom="12dp"
         android:textColor="@color/white"
         tools:text="52"
-        app:layout_constraintHorizontal_bias="0.7"
+        app:layout_constraintHorizontal_bias="0.75"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/linearLayout"
         app:layout_constraintBottom_toTopOf="@id/sliderList"
         android:textAlignment="center"
-        android:alpha="0.8"
         android:layout_marginStart="18dp"
         android:fontFamily="@font/uthmanic_hafs"
-        android:textSize="20sp"/>
+        android:textSize="25sp"/>
 
     <TextView
         android:id="@+id/page"
@@ -186,16 +183,15 @@
         android:paddingBottom="12dp"
         android:textColor="@color/white"
         tools:text="52"
-        app:layout_constraintHorizontal_bias="0.3"
+        app:layout_constraintHorizontal_bias="0.25"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/linearLayout"
         app:layout_constraintBottom_toTopOf="@id/sliderList"
         android:textAlignment="center"
         android:layout_marginStart="18dp"
-        android:alpha="0.8"
         android:fontFamily="@font/uthmanic_hafs"
-        android:textSize="20sp"/>
+        android:textSize="25sp"/>
 
 
     <LinearLayout
