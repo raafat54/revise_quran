@@ -171,27 +171,26 @@ class MainActivity : AppCompatActivity() {
         slider.valueTo = numberOfAyahsForSuraArray[sora].toFloat()
 
         fun textViewPaddingFirst() {
-                basmalah.visibility = View.VISIBLE
+            basmalah.visibility = View.VISIBLE
+            textView.visibility = View.GONE
         }
         fun textViewPaddingRest() {
             basmalah.visibility = View.GONE
+            textView.visibility = View.VISIBLE
         }
 
         fun nextClicked(){
+
             if (i < textView.size() - 1 ){
                 if(basmalah.visibility == View.VISIBLE){
                     textView.next(i)
-                    textViewPaddingRest()
                 }
                 else
                     textView.next(++i)
             }
 
             else{
-                if(basmalah.visibility == View.VISIBLE){
-                    textViewPaddingRest()
-                }
-                else if(ayaNo < numberOfAyahsForSuraArray[sora - 1]) {
+                if(ayaNo < numberOfAyahsForSuraArray[sora - 1]) {
                     ayaNo++
                     slider.value = ayaNo.toFloat()
 
@@ -508,6 +507,10 @@ class MainActivity : AppCompatActivity() {
         })
 
 
+        basmalah.setOnClickListener {
+            basmalah.visibility = View.GONE
+            textView.visibility = View.VISIBLE
+        }
 
 
         textView.setOnClickListener {
