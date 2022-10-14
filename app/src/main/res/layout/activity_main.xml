@@ -34,6 +34,7 @@
             android:id="@+id/launch"
             android:layout_gravity="center"
             android:layout_weight="0.3"
+            app:icon="@drawable/ic_launch"
             android:text="تطبيق قرآن"
             android:textColor="@color/white"
             android:textSize="20sp"
@@ -92,6 +93,26 @@
 
         </RelativeLayout>
 
+    <TextView
+        android:id="@+id/basmalah"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/gray"
+        android:layout_marginBottom="100dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sliderList"
+        app:layout_constraintVertical_bias="0.1"
+        android:text="X"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textSize="130dp"
+        android:translationZ="55dp"
+        android:fontFamily="@font/basmalah"
+        android:textColor="@color/white"
+        />
+
 
     <View
 
@@ -103,6 +124,8 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         />
+
+
 
     <LinearLayout
         android:id="@+id/tv_ll"
@@ -116,23 +139,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/sliderList">
 
-    <com.raafat.revise.PagedTextView
-        android:id="@+id/quran_content_tv"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/border"
-        android:elevation="20dp"
-        android:textAlignment="center"
-        android:layoutDirection="rtl"
-        android:textDirection="rtl"
-        android:gravity="center|top"
-        android:fontFamily="@font/hafs_smart"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:paddingBottom="75dp"
-        android:paddingTop="25dp"
-        android:textColor="@color/white"
-        android:textSize="35sp" />
+        <com.raafat.revise.PagedTextView
+            android:id="@+id/quran_content_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/border"
+            android:elevation="20dp"
+            android:textAlignment="center"
+            android:layoutDirection="rtl"
+            android:textDirection="rtl"
+            android:gravity="center|top"
+            android:fontFamily="@font/hafs_smart"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="75dp"
+            android:paddingTop="25dp"
+            android:textColor="@color/white"
+            android:textSize="35sp" />
 
     </LinearLayout>
 

@@ -40,11 +40,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var spinner: Spinner
     private lateinit var previous: ExtendedFloatingActionButton
 
-     private lateinit var launch: ExtendedFloatingActionButton
+    private lateinit var launch: ExtendedFloatingActionButton
     private lateinit var hide: MaterialSwitch
     private lateinit var count: TextView
     private lateinit var page: TextView
     private lateinit var gson: AyaList
+
+    private lateinit var basmalah: TextView
 
     private var hideAya = false
 
@@ -83,6 +85,8 @@ class MainActivity : AppCompatActivity() {
         spinner = findViewById(R.id.sura_spinner)
         slider = findViewById(R.id.slider)
 
+        basmalah = findViewById(R.id.basmalah)
+        basmalah.visibility = View.GONE
 
 
 
@@ -166,13 +170,28 @@ class MainActivity : AppCompatActivity() {
 
         slider.valueTo = numberOfAyahsForSuraArray[sora].toFloat()
 
+        fun textViewPaddingFirst() {
+                basmalah.visibility = View.VISIBLE
+        }
+        fun textViewPaddingRest() {
+            basmalah.visibility = View.GONE
+        }
 
         fun nextClicked(){
-            if (i < textView.size() - 1 )
-                textView.next(++i)
+            if (i < textView.size() - 1 ){
+                if(basmalah.visibility == View.VISIBLE){
+                    textView.next(i)
+                    textViewPaddingRest()
+                }
+                else
+                    textView.next(++i)
+            }
 
             else{
-                if(ayaNo < numberOfAyahsForSuraArray[sora - 1]) {
+                if(basmalah.visibility == View.VISIBLE){
+                    textViewPaddingRest()
+                }
+                else if(ayaNo < numberOfAyahsForSuraArray[sora - 1]) {
                     ayaNo++
                     slider.value = ayaNo.toFloat()
 
@@ -220,6 +239,7 @@ class MainActivity : AppCompatActivity() {
             nextClicked()
         }
 
+
         spinner.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -227,10 +247,15 @@ class MainActivity : AppCompatActivity() {
                 view: View?, position: Int, id: Long
             ) {
                 if (position >= 0){
+
                     if (clicked) {
                         sora = position + 1
                         ayaNo = 1
+                        if(sora != 1 && sora != 9)
+                            textViewPaddingFirst()
 
+                        if((sora == 1 || sora == 9) && basmalah.visibility == View.VISIBLE)
+                            textViewPaddingRest()
 
                         slider.value = 1f
 
@@ -243,6 +268,7 @@ class MainActivity : AppCompatActivity() {
                                 .filter {aya -> aya.sora == spinner.selectedItemPosition + 1 }[0].page
 
                             page.text = "صفحة   ".plus(savedPage)
+
 
                             list = gson.filter { aya -> aya.ayaNo == ayaNo }
                                 .filter { aya -> aya.sora == sora }[0].ayaText.split(" ").toList()
@@ -315,6 +341,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 else {
                     setTextView()
+                    textViewPaddingRest()
                 }
                 i = 0
                 textView.next(i)
@@ -346,6 +373,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 else {
                     setTextView()
+                    textViewPaddingRest()
                 }
                 i = 0
                 textView.next(i)
@@ -438,6 +466,7 @@ class MainActivity : AppCompatActivity() {
 
         hide.setOnClickListener{
             hideAya = !hideAya
+            textViewPaddingRest()
             if (hideAya) {
                 if (textView.size() > 1 && i > 0) {
                     i = 0
@@ -457,6 +486,7 @@ class MainActivity : AppCompatActivity() {
         hide.setOnTouchListener(object : View.OnTouchListener{
             override fun onTouch(v: View?, event: MotionEvent?): Boolean {
                 if (event?.action == MotionEvent.ACTION_UP) {
+                    textViewPaddingRest()
                     hideAya = !hideAya
                     if (hideAya) {
                         if (textView.size() > 1 && i > 0) {
@@ -602,8 +632,8 @@ class MainActivity : AppCompatActivity() {
 
     val context = ContextThemeWrapper(this@MainActivity, R.style.popupMenuStyle)
 
-    private fun showPopupMenu(view: View) = PopupMenu(context, view)
-        .run {
+    private fun showPopupMenu(view: View) =
+        PopupMenu(context, view).run {
             menuInflater.inflate(R.menu.main_menu, menu)
             setOnMenuItemClickListener {
                 when (it.itemId) {
@@ -618,4 +648,7 @@ class MainActivity : AppCompatActivity() {
             }
             show()
         }
+
+
+
 }
