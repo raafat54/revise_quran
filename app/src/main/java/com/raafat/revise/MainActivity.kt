@@ -11,6 +11,8 @@ import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.Spanned
@@ -35,12 +37,10 @@ import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity() {
     private lateinit var textView: PagedTextView
-    private lateinit var menu: ExtendedFloatingActionButton
     private lateinit var slider: Slider
     private lateinit var spinner: Spinner
     private lateinit var previous: ExtendedFloatingActionButton
 
-    private lateinit var launch: ExtendedFloatingActionButton
     private lateinit var hide: MaterialSwitch
     private lateinit var count: TextView
     private lateinit var page: TextView
@@ -76,9 +76,7 @@ class MainActivity : AppCompatActivity() {
         hide = findViewById(R.id.hide)
         val defaultThumb = hide.thumbTintList
 
-        launch = findViewById(R.id.launch)
 
-        menu = findViewById(R.id.menu)
 
         previous = findViewById(R.id.previous_aya)
 
@@ -93,18 +91,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        launch.setOnClickListener {
-            val appisFound = isAppInstalled(this@MainActivity, "com.quran.labs.androidquran")
-            if(appisFound) {
-                startNewActivity(spinner.selectedItemPosition + 1, slider.value.toInt())
-            }else{
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.quran.labs.androidquran")))
-            }
-        }
 
-        menu.setOnClickListener {
-            showPopupMenu(menu)
-        }
 
 
         val numberOfAyahsForSuraArray = intArrayOf(
@@ -549,9 +536,24 @@ class MainActivity : AppCompatActivity() {
             if(hideAya) undoClicked() else previousClicked()
         }
 
-        previous.setOnLongClickListener(object : OnContinuousClickListener(600){
+        fun vibratePhone() {
+            val vibrator = context?.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            if (Build.VERSION.SDK_INT >= 26) {
+                vibrator.vibrate(VibrationEffect.createOneShot(20, VibrationEffect.DEFAULT_AMPLITUDE))
+            } else {
+                vibrator.vibrate(20)
+            }
+        }
+
+        previous.setOnLongClickListener(object : OnContinuousClickListener(2000){
             override fun onContinuousClick(v: View?) {
-                if(hideAya) undoClicked() else previousClicked()
+                if(hideAya){
+                        i = 0
+                        textView.next(i)
+                        hide()
+                        vibratePhone()
+
+                }
 
             }
 
@@ -575,27 +577,6 @@ class MainActivity : AppCompatActivity() {
         putSharedPrefs.edit().putFloat("slider", slider.value).apply()
     }
 
-    private fun startNewActivity(sora: Int, ayaNo: Int) {
-        Log.i("TAG", "showPopupMenu: ${sora} , ${ayaNo}")
-
-        val intent =  Intent()
-        intent.action = Intent.ACTION_VIEW
-        intent.data = Uri.parse("quran://$sora/$ayaNo")
-        startActivity(intent)
-
-    }
-
-    private fun isAppInstalled(context: Context, packageName: String?): Boolean {
-        return try {
-            if (packageName != null) {
-                context.packageManager.getApplicationInfo(packageName, 0)
-            }
-            true
-        } catch (e: PackageManager.NameNotFoundException) {
-            false
-        }
-    }
-
 
     fun getFont(): Typeface {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) resources.getFont(R.font.uthmanic_hafs)
@@ -607,8 +588,7 @@ class MainActivity : AppCompatActivity() {
     val tutorial = mapOf(R.id.sura_spinner to "اختر السورة من القائمة" ,
         R.id.previous_aya to "الآية السابقة",
         R.id.dummy to "نقر على الشاشة لإظهار الآية التالية",
-        R.id.hide to " إخفاء الآيات للتسميع",
-        R.id.launch to "فتح الآية فى تطبيق قرآن أندرويد"
+        R.id.hide to " إخفاء الآيات للتسميع"
     )
     private fun newSequence(id : Int, string: String){
 
@@ -634,7 +614,7 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     override fun onSequenceCanceled(lastTarget: TapTarget?) {
-                        if (k < 4) ++k else return
+                        if (k < 3) ++k else return
                         newSequence( tutorial.keys.toIntArray()[k], tutorial.values.toTypedArray()[k])
                     }
 
@@ -656,15 +636,7 @@ class MainActivity : AppCompatActivity() {
         PopupMenu(context, view).run {
             menuInflater.inflate(R.menu.main_menu, menu)
             setOnMenuItemClickListener {
-                when (it.itemId) {
-                    R.id.tutorial -> {
-                        showTutorial()
-                        true
-                    }
-                    else -> {
-                        true
-                    }
-                }
+                true
             }
             show()
         }

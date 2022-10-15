@@ -8,6 +8,9 @@
     android:background="@color/gray"
     tools:context=".MainActivity">
 
+
+
+
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
@@ -22,23 +25,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/menu"
-            android:layout_width="60dp"
-            android:layout_height="48dp"
-            app:icon="@drawable/ic_menu"
-            android:backgroundTint="@color/gray" />
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/launch"
-            android:layout_gravity="center"
-            app:icon="@drawable/ic_launch"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:fontFamily="@font/uthmanic_hafs"
-            android:textStyle="bold"
-            android:backgroundTint="@color/gray"
-            android:layout_width="60dp"
-            android:layout_height="48dp"/>
+
 
         <Spinner
             android:layout_width="0dp"
@@ -208,7 +195,24 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="5dp"
+            android:orientation="vertical">
 
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/hide"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layoutDirection="rtl" />
+
+
+
+        </LinearLayout>
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/previous_aya"
@@ -231,24 +235,7 @@
             android:gravity="center"/>
 
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="5dp"
-            android:orientation="vertical">
 
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/hide"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layoutDirection="rtl" />
-
-
-
-        </LinearLayout>
 
     </LinearLayout>
 
