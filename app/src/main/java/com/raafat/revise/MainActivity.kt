@@ -35,7 +35,7 @@ import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity() {
     private lateinit var textView: PagedTextView
-    private lateinit var menu: ImageButton
+    private lateinit var menu: ExtendedFloatingActionButton
     private lateinit var slider: Slider
     private lateinit var spinner: Spinner
     private lateinit var previous: ExtendedFloatingActionButton
@@ -54,10 +54,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        textView = findViewById(R.id.quran_content_tv)
 
         val getSharedPrefs: SharedPreferences = getSharedPreferences(packageName, MODE_PRIVATE)
         val savedSura = getSharedPrefs.getInt("spinner", 0)
         val savedAya = getSharedPrefs.getFloat("slider", 1f)
+
+
 
         val PREFS_NAME = "MyPrefsFile"
 
@@ -115,7 +118,6 @@ class MainActivity : AppCompatActivity() {
             /* 99 - 114 */ 8, 11, 11, 8, 3, 9, 5, 4, 7, 3, 6, 3, 5, 4, 5, 6
         )
 
-        textView = findViewById(R.id.quran_content_tv)
 
 
         var json: String
@@ -172,7 +174,7 @@ class MainActivity : AppCompatActivity() {
 
         fun textViewPaddingFirst() {
             basmalah.visibility = View.VISIBLE
-            textView.visibility = View.GONE
+            textView.visibility = View.INVISIBLE
         }
         fun textViewPaddingRest() {
             basmalah.visibility = View.GONE
@@ -331,7 +333,7 @@ class MainActivity : AppCompatActivity() {
 
                     if(sora != 1 && sora != 9) {
                         basmalah.visibility = View.VISIBLE
-                        textView.visibility = View.GONE
+                        textView.visibility = View.INVISIBLE
                     }
 
                     list = gson.filter { aya -> aya.ayaNo == ayaNo }
@@ -369,7 +371,7 @@ class MainActivity : AppCompatActivity() {
 
                     if(sora != 1 && sora != 9) {
                         basmalah.visibility = View.VISIBLE
-                        textView.visibility = View.GONE
+                        textView.visibility = View.INVISIBLE
                     }
 
                     list = gson.filter { aya -> aya.ayaNo == ayaNo }
