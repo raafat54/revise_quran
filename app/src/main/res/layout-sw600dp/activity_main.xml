@@ -9,22 +9,6 @@
     tools:context=".MainActivity">
 
 
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/determinateBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintVertical_bias="0.8"
-        tools:progress="500"
-        android:translationZ="55dp"
-        android:progressTint="@color/white"
-        android:layout_marginStart="29dp"
-        android:layout_marginEnd="29dp"
-        android:max="1000"
-        />
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -39,16 +23,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
-
-        <ImageButton
-            android:id="@+id/mode"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@drawable/ic_light_mode"
-            android:textAlignment="center"
-            android:backgroundTint="@android:color/transparent"
-            android:contentDescription="mode" />
 
         <Spinner
             android:layout_width="0dp"
