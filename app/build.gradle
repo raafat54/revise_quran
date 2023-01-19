@@ -10,8 +10,8 @@ android {
         applicationId "com.raafat.revise"
         minSdk 21
         targetSdk 32
-        versionCode 26
-        versionName "2.0.9"
+        versionCode 32
+        versionName "2.1.5"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -21,6 +21,9 @@ android {
             debuggable false
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            applicationIdSuffix ".debug"
         }
     }
     compileOptions {

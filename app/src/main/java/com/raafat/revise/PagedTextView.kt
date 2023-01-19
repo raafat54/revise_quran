@@ -119,7 +119,7 @@ class PagedTextView : AppCompatTextView {
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
 
-        if (changed || needPaginate) {
+        if (changed && needPaginate) {
             paginate(text)
             setPageText()
             needPaginate = false
