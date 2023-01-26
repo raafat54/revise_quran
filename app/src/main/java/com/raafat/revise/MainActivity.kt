@@ -204,6 +204,29 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        fun specialPreviousClicked() {
+            if (ayaNo > 1){
+                if(i == 0) {
+                    ayaNo--
+                    slider.value = ayaNo.toFloat()
+                    list = gson.filter { aya -> aya.ayaNo == ayaNo }
+                        .filter { aya -> aya.sora == sora }[0].ayaText.split(" ").toList()
+                    newList = list.subList(0, list.size - 1).joinToString(" ")
+                    lastChar = "\u00a0".plus(list.last())
+
+                    string = newList.plus(lastChar)
+                    textView.text = string
+                    textView.paginate(textView.text)
+                    i = 0
+                    textView.next(i)
+                }
+                else{
+                    i = 0
+                    textView.next(i)
+                }
+            }
+        }
+
         fun previousClicked(){
             if (i > 0 )
                 textView.next(--i)
@@ -533,7 +556,7 @@ class MainActivity : AppCompatActivity() {
 
 
         previous.setOnClickListener {
-            if(hideAya) undoClicked() else previousClicked()
+            if(hideAya) undoClicked() else specialPreviousClicked()
         }
 
         fun vibratePhone() {
@@ -560,6 +583,8 @@ class MainActivity : AppCompatActivity() {
         })
 
     }
+
+
 
     override fun attachBaseContext(newBase: Context?) {
 
