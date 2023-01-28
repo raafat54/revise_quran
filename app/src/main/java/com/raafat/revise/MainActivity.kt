@@ -1,14 +1,10 @@
 package com.raafat.revise
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.Color
-import android.graphics.Typeface
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -17,16 +13,12 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
-import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.MotionEvent
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
-import com.getkeepsafe.taptargetview.TapTarget
-import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.slider.Slider
@@ -61,18 +53,6 @@ class MainActivity : AppCompatActivity() {
         val savedAya = getSharedPrefs.getFloat("slider", 1f)
 
 
-
-        val PREFS_NAME = "MyPrefsFile"
-
-        val settings = getSharedPreferences(PREFS_NAME, 0)
-
-        if (settings.getBoolean("my_first_time", true)) {
-
-            // first time task
-            showTutorial()
-            // record the fact that the app has been started at least once
-            settings.edit().putBoolean("my_first_time", false).apply()
-        }
         hide = findViewById(R.id.hide)
         val defaultThumb = hide.thumbTintList
 
@@ -603,69 +583,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun getFont(): Typeface {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) resources.getFont(R.font.uthmanic_hafs)
-        else this.let { ResourcesCompat.getFont(it, R.font.uthmanic_hafs) }!!
-    }
-
-
-    var k = 0
-    val tutorial = mapOf(R.id.sura_spinner to "اختر السورة من القائمة" ,
-        R.id.previous_aya to "الآية السابقة",
-        R.id.dummy to "نقر على الشاشة لإظهار الآية التالية",
-        R.id.hide to " إخفاء الآيات للتسميع"
-    )
-    private fun newSequence(id : Int, string: String){
-
-        val sequence = TapTargetSequence(this@MainActivity)
-           .targets(
-                TapTarget.forView(findViewById(id), "\n".plus(string))
-                            .transparentTarget(true)
-                            .textTypeface(getFont())
-                            .titleTextSize(30)
-                            .outerCircleAlpha(1f)
-                            .outerCircleColor(R.color.white)
-                            .targetRadius(0)
-                            .cancelable(true)
-           )
-            .listener(
-                object : TapTargetSequence.Listener{
-                    override fun onSequenceFinish() {
-
-                    }
-
-                    override fun onSequenceStep(lastTarget: TapTarget?, targetClicked: Boolean) {
-
-                    }
-
-                    override fun onSequenceCanceled(lastTarget: TapTarget?) {
-                        if (k < 3) ++k else return
-                        newSequence( tutorial.keys.toIntArray()[k], tutorial.values.toTypedArray()[k])
-                    }
-
-                }
-            )
-            .considerOuterCircleCanceled(true)
-            sequence.start()
-
-    }
-
-    private fun showTutorial() {
-        k = 0
-        newSequence( tutorial.keys.toIntArray()[k], tutorial.values.toTypedArray()[k])
-    }
-
     val context = ContextThemeWrapper(this@MainActivity, R.style.popupMenuStyle)
-
-    private fun showPopupMenu(view: View) =
-        PopupMenu(context, view).run {
-            menuInflater.inflate(R.menu.main_menu, menu)
-            setOnMenuItemClickListener {
-                true
-            }
-            show()
-        }
-
 
 
 }
