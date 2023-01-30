@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -19,6 +20,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.slider.Slider
@@ -89,13 +91,25 @@ class MainActivity : AppCompatActivity() {
 
         var json: String
 
+        var fileName : String
+
+        var typeface = ResourcesCompat.getFont(context, R.font.hafs_smart)
+
         runBlocking {
-            json = applicationContext.assets.open("data.json")
+            if(Build.VERSION.SDK_INT == Build.VERSION_CODES.P) {
+                fileName = "hafsData.json"
+                typeface = ResourcesCompat.getFont(context, R.font.uthmanic_hafs)!!
+            }
+            else {
+                fileName = "data.json"
+            }
+            json = applicationContext.assets.open(fileName)
             .bufferedReader()
             .use { it.readText() }
         }
 
 
+        textView.typeface = typeface
 
 
         gson = Gson().fromJson(json, AyaList::class.java)
