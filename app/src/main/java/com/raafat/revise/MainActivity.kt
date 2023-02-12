@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.Color
-import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -25,7 +24,8 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.slider.Slider
 import com.google.gson.Gson
-import com.raafat.revise.data.AyaList
+import com.google.gson.reflect.TypeToken
+import com.raafat.revise.data.Aya
 import kotlinx.coroutines.runBlocking
 
 
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var hide: MaterialSwitch
     private lateinit var count: TextView
     private lateinit var page: TextView
-    private lateinit var gson: AyaList
+    private lateinit var gson: List<Aya>
 
     private lateinit var basmalah: TextView
 
@@ -111,8 +111,9 @@ class MainActivity : AppCompatActivity() {
 
         textView.typeface = typeface
 
+        val type = object : TypeToken<ArrayList<Aya>>() {}.type
 
-        gson = Gson().fromJson(json, AyaList::class.java)
+        gson = Gson().fromJson(json, type)
 
         val suras = resources.getStringArray(R.array.sura_names)
 
