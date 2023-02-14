@@ -219,6 +219,9 @@ class MainActivity : AppCompatActivity() {
                     i = 0
                     textView.next(i)
                 }
+            }else{
+                i = 0
+                textView.next(i)
             }
         }
 
