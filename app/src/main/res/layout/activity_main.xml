@@ -86,9 +86,9 @@
         android:text="@string/basmalah"
         android:gravity="center"
         android:textAlignment="center"
-        android:textSize="35dp"
+        android:textSize="35sp"
         android:translationZ="60dp"
-        android:fontFamily="@font/hafs_smart"
+        android:fontFamily="@font/uthmanic_hafs"
         android:textColor="@color/white"
         />
 

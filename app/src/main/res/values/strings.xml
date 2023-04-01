@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">مراجعة حفظ القرآن الكريم</string>
-    <string name="basmalah">‏ ‏‏ ‏‏‏‏ ‏‏‏‏‏‏</string>
+    <string name="basmalah">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيم</string>
     <string-array name="sura_names">
         <item>1. الفَاتِحَةِ</item>
         <item>2. البَقَرَةِ</item>
