@@ -7,6 +7,7 @@ import android.os.Build
 import android.text.Layout
 import android.text.StaticLayout
 import android.util.AttributeSet
+import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
 import kotlin.math.min
 
@@ -132,14 +133,16 @@ class PagedTextView : AppCompatTextView {
         val layout = from(layout)
         val lines = min(maxLines, layout.lineCount)
         var startOffset = 0
-        val heightWithoutPaddings = pageHeight - paddingTop - paddingBottom
+        val heightWithoutPaddings = pageHeight - paddingTop - paddingBottom - paddingBottom
         var height = heightWithoutPaddings
 
         for (i in 0 until lines) {
+
             if (height < layout.getLineBottom(i)) {
                 pageList.add(
                     text.subSequence(startOffset, layout.getLineStart(i))
                 )
+                Log.i("TAG", "1 : ${pageList.size}")
                 startOffset = layout.getLineStart(i)
                 height = layout.getLineTop(i) + heightWithoutPaddings
             }
@@ -148,6 +151,13 @@ class PagedTextView : AppCompatTextView {
                 pageList.add(
                     text.subSequence(startOffset, layout.getLineEnd(i))
                 )
+                if (pageList[pageList.size - 1].toString().split(" ").size <= 4
+                    && size() > 1) {
+                    pageList[pageList.size - 2] = pageList[pageList.size - 2].toString()
+                        .plus(pageList[pageList.size - 1])
+                    pageList.removeAt(pageList.size - 1)
+                }
+
             }
         }
     }

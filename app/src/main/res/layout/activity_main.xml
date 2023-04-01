@@ -128,7 +128,7 @@
             android:textAlignment="gravity"
             android:layoutDirection="rtl"
             android:textDirection="rtl"
-            android:gravity="start|center"
+            android:gravity="start|top"
             android:fontFamily="@font/hafs_smart"
             android:paddingStart="12dp"
             android:paddingEnd="6dp"
