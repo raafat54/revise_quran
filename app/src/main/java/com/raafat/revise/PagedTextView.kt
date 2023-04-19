@@ -2,12 +2,13 @@ package com.raafat.revise
 
 import android.annotation.TargetApi
 import android.content.Context
-import android.graphics.Typeface
+import android.graphics.*
 import android.os.Build
 import android.text.Layout
 import android.text.StaticLayout
 import android.util.AttributeSet
 import android.util.Log
+import androidx.annotation.NonNull
 import androidx.appcompat.widget.AppCompatTextView
 import kotlin.math.min
 
@@ -111,10 +112,46 @@ class PagedTextView : AppCompatTextView {
         }
     }
 
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
+    private class NonClippableCanvas(@NonNull val bitmap: Bitmap) : Canvas(bitmap) {
+        override fun clipRect(left: Float, top: Float, right: Float, bottom: Float): Boolean {
+            return true
+        }
+    }
 
-        pageHeight = h
+    private var rttCanvas: NonClippableCanvas? = null
+
+
+    override fun onSizeChanged(width: Int, height: Int,
+                               oldwidth: Int, oldheight: Int) {
+        if ((width != oldwidth || height != oldheight) && width > 0 && height > 0) {
+            rttCanvas?.bitmap?.recycle()
+            try {
+                Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)?.let {
+                    rttCanvas = NonClippableCanvas(it)
+                }
+            } catch (t: Throwable) {
+                // If for some reasons the bitmap cannot be created, we fall back on default rendering (potentially cropping the text).
+                rttCanvas?.bitmap?.recycle()
+                rttCanvas = null
+            }
+        }
+
+        super.onSizeChanged(width, height, oldwidth, oldheight)
+        pageHeight = height
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        rttCanvas?.let {
+            // Clear the RTT canvas from the previous font.
+            it.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+
+            // Draw on the RTT canvas (-> bitmap) that will use clipping on the NonClippableCanvas, resulting in no-clipping
+            super.onDraw(it)
+
+            // Finally draw the bitmap that contains the rendered text (no clipping used here, will display on top of padding)
+            canvas.drawBitmap(it.bitmap, 0f, 0f, null)
+
+        } ?: super.onDraw(canvas) // If rtt is not available, use default rendering process
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
@@ -151,7 +188,7 @@ class PagedTextView : AppCompatTextView {
                 pageList.add(
                     text.subSequence(startOffset, layout.getLineEnd(i))
                 )
-                if (pageList[pageList.size - 1].toString().split(" ").size <= 4
+                if (pageList[pageList.size - 1].toString().split(" ").size <= 2
                     && size() > 1) {
                     pageList[pageList.size - 2] = pageList[pageList.size - 2].toString()
                         .plus(pageList[pageList.size - 1])
