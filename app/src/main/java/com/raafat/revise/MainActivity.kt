@@ -93,12 +93,12 @@ class MainActivity : AppCompatActivity() {
 
         var fileName : String
 
-        var typeface = ResourcesCompat.getFont(context, R.font.hafs_smart)
+        var typeface = ResourcesCompat.getFont(this, R.font.hafs_smart)
 
         runBlocking {
             if(Build.VERSION.SDK_INT == Build.VERSION_CODES.P) {
                 fileName = "hafsData.json"
-                typeface = ResourcesCompat.getFont(context, R.font.uthmanic_hafs)!!
+                typeface = ResourcesCompat.getFont(this@MainActivity, R.font.uthmanic_hafs)!!
             }
             else {
                 fileName = "data.json"
@@ -558,7 +558,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         fun vibratePhone() {
-            val vibrator = context?.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            val vibrator = this?.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
             if (Build.VERSION.SDK_INT >= 26) {
                 vibrator.vibrate(VibrationEffect.createOneShot(20, VibrationEffect.DEFAULT_AMPLITUDE))
             } else {
@@ -582,8 +582,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-
-
     override fun attachBaseContext(newBase: Context?) {
 
         val newOverride = Configuration(newBase?.resources?.configuration)
@@ -599,9 +597,4 @@ class MainActivity : AppCompatActivity() {
         putSharedPrefs.edit().putInt("spinner", spinner.selectedItemPosition).apply()
         putSharedPrefs.edit().putFloat("slider", slider.value).apply()
     }
-
-
-    val context = ContextThemeWrapper(this@MainActivity, R.style.popupMenuStyle)
-
-
 }

@@ -126,10 +126,10 @@
             android:textAlignment="gravity"
             android:layoutDirection="rtl"
             android:textDirection="rtl"
-            android:gravity="start|top"
+            android:gravity="center|top"
             android:fontFamily="@font/hafs_smart"
-            android:paddingStart="24dp"
-            android:paddingEnd="24dp"
+            android:paddingStart="32dp"
+            android:paddingEnd="32dp"
             android:paddingBottom="175dp"
             android:textColor="@color/white"
             android:textSize="50sp" />
