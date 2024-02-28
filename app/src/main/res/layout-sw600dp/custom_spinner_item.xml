@@ -10,6 +10,6 @@
     android:letterSpacing="0.1"
     android:gravity="center"
     android:background="@color/gray"
-    android:textSize="35sp"
+    android:textSize="33sp"
     >
 </TextView>

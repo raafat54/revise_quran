@@ -78,7 +78,7 @@
         android:id="@+id/basmalah"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="150dp"
+        android:layout_marginBottom="100dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -86,23 +86,12 @@
         android:text="@string/basmalah"
         android:gravity="center"
         android:textAlignment="center"
-        android:textSize="50sp"
-        android:translationZ="55dp"
+        android:textSize="46.2sp"
+        android:translationZ="60dp"
         android:fontFamily="@font/uthmanic_hafs"
         android:textColor="@color/white"
         />
 
-
-    <View
-
-        android:id="@+id/dummy"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/sliderList"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        />
 
 
 
@@ -111,9 +100,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"
-        android:background="@color/gray"
-        android:layout_marginBottom="150dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="#191919"
+        app:layout_constraintBottom_toTopOf="@id/container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/sliderList">
@@ -130,9 +118,9 @@
             android:fontFamily="@font/hafs_smart"
             android:paddingStart="32dp"
             android:paddingEnd="32dp"
-            android:paddingBottom="175dp"
+            android:paddingBottom="85dp"
             android:textColor="@color/white"
-            android:textSize="50sp" />
+            android:textSize="45sp" />
 
     </LinearLayout>
 
@@ -152,7 +140,9 @@
         android:textAlignment="center"
         android:layout_marginStart="18dp"
         android:fontFamily="@font/uthmanic_hafs"
-        android:textSize="36sp"/>
+        android:textSize="34sp"/>
+
+
 
     <TextView
         android:id="@+id/page"
@@ -170,16 +160,13 @@
         android:textAlignment="center"
         android:layout_marginStart="18dp"
         android:fontFamily="@font/uthmanic_hafs"
-        android:textSize="36sp"/>
+        android:textSize="34sp"/>
 
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="140dp"
-        android:paddingTop="5dp"
-        android:paddingBottom="15dp"
-        android:background="@color/gray"
         android:elevation="20dp"
         android:gravity="center"
         android:translationZ="25dp"
@@ -190,12 +177,12 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/hide_ll"
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
             android:gravity="center"
-            android:padding="5dp"
+            android:padding="25dp"
             android:orientation="vertical">
 
             <com.google.android.material.materialswitch.MaterialSwitch
@@ -212,30 +199,35 @@
 
         </LinearLayout>
 
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/previous_aya"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:elevation="10dp"
-            android:layout_weight="1"
-            android:layoutDirection="rtl"
-            android:layout_marginEnd="15dp"
-            android:text="الرجوع"
-            android:textColor="@color/white"
-            android:textSize="35sp"
-            android:textStyle="bold"
+        <TextView
+            android:textColor="#59ffffff"
+            tools:text="2   /   1"
             android:fontFamily="@font/uthmanic_hafs"
-            app:iconSize="35dp"
-            android:layout_marginStart="15dp"
+            android:textSize="36sp"
+            android:gravity="center"
+            android:id="@+id/dummy"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_toEndOf="@id/hide_ll"
+            android:layout_toStartOf="@+id/previous_aya"
+            android:background="#191919" />
+
+        <ImageButton
+            android:src="@drawable/ic_arrow_up"
+            android:id="@+id/previous_aya"
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
+            android:layoutDirection="rtl"
+            android:backgroundTint="@color/gray"
+            android:scaleType="centerCrop"
             app:iconTint="@color/white"
-            android:backgroundTint="@color/cardview_dark_background"
-            app:fabSize="normal"
+            android:layout_alignParentEnd="true"
             android:gravity="center"/>
 
 
 
 
-    </LinearLayout>
+    </RelativeLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

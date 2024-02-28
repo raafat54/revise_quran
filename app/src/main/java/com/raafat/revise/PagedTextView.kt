@@ -188,7 +188,7 @@ class PagedTextView : AppCompatTextView {
                 pageList.add(
                     text.subSequence(startOffset, layout.getLineEnd(i))
                 )
-                if (pageList[pageList.size - 1].toString().split(" ").size <= 2
+                if (fitsOneLine(pageList[pageList.size - 1].toString())
                     && size() > 1) {
                     pageList[pageList.size - 2] = pageList[pageList.size - 2].toString()
                         .plus(pageList[pageList.size - 1])
@@ -197,6 +197,12 @@ class PagedTextView : AppCompatTextView {
 
             }
         }
+    }
+
+    private fun fitsOneLine(line: String): Boolean {
+        val paint = this.paint
+        val width = paint.measureText(line)
+        return width <= (this.width + this.paddingStart + this.paddingEnd)
     }
 
     private fun from(layout: Layout): Layout =

@@ -13,14 +13,16 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
-import android.view.ContextThemeWrapper
 import android.view.MotionEvent
 import android.view.View
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.ImageButton
+import android.widget.Spinner
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.slider.Slider
 import com.google.gson.Gson
@@ -33,8 +35,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var textView: PagedTextView
     private lateinit var slider: Slider
     private lateinit var spinner: Spinner
-    private lateinit var previous: ExtendedFloatingActionButton
-
+    private lateinit var previous: ImageButton
+    private lateinit var view: TextView
     private lateinit var hide: MaterialSwitch
     private lateinit var count: TextView
     private lateinit var page: TextView
@@ -53,6 +55,7 @@ class MainActivity : AppCompatActivity() {
         val getSharedPrefs: SharedPreferences = getSharedPreferences(packageName, MODE_PRIVATE)
         val savedSura = getSharedPrefs.getInt("spinner", 0)
         val savedAya = getSharedPrefs.getFloat("slider", 1f)
+        val savedSize = getSharedPrefs.getInt("size", 1)
 
 
         hide = findViewById(R.id.hide)
@@ -67,13 +70,9 @@ class MainActivity : AppCompatActivity() {
 
         spinner = findViewById(R.id.sura_spinner)
         slider = findViewById(R.id.slider)
-
+        view = findViewById(R.id.dummy)
         basmalah = findViewById(R.id.basmalah)
         basmalah.visibility = View.GONE
-
-
-
-
 
 
         val numberOfAyahsForSuraArray = intArrayOf(
@@ -88,24 +87,22 @@ class MainActivity : AppCompatActivity() {
         )
 
 
-
         var json: String
 
-        var fileName : String
+        var fileName: String
 
         var typeface = ResourcesCompat.getFont(this, R.font.hafs_smart)
 
         runBlocking {
-            if(Build.VERSION.SDK_INT == Build.VERSION_CODES.P) {
+            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.P) {
                 fileName = "hafsData.json"
                 typeface = ResourcesCompat.getFont(this@MainActivity, R.font.uthmanic_hafs)!!
-            }
-            else {
+            } else {
                 fileName = "data.json"
             }
             json = applicationContext.assets.open(fileName)
-            .bufferedReader()
-            .use { it.readText() }
+                .bufferedReader()
+                .use { it.readText() }
         }
 
 
@@ -132,7 +129,7 @@ class MainActivity : AppCompatActivity() {
         count.text = "الآية   ".plus(slider.value.toInt().toString())
 
         var savedPage = gson.filter { aya -> aya.ayaNo == ayaNo }
-            .filter {aya -> aya.sora == sora + 1 }[0].page
+            .filter { aya -> aya.sora == sora + 1 }[0].page
 
         page.text = "صفحة   ".plus(savedPage)
 
@@ -149,40 +146,50 @@ class MainActivity : AppCompatActivity() {
         textView.text = string
 
 
+        view.text = "${i+1}   من   ${savedSize}"
+
+
         slider.value = ayaNo.toFloat()
 
 
         slider.valueTo = numberOfAyahsForSuraArray[sora].toFloat()
 
         fun textViewPaddingFirst() {
+            previous.isEnabled = false
+            previous.imageAlpha = 96
             basmalah.visibility = View.VISIBLE
             textView.visibility = View.INVISIBLE
         }
+
         fun textViewPaddingRest() {
             basmalah.visibility = View.GONE
             textView.visibility = View.VISIBLE
         }
 
-        if(savedAya == 1f)
+        if (savedAya == 1f) {
             if (spinner.selectedItemPosition + 1 != 1 &&
-                spinner.selectedItemPosition + 1 != 9)
+                spinner.selectedItemPosition + 1 != 9
+            )
                 textViewPaddingFirst()
+            previous.isEnabled = false
+            previous.imageAlpha = 96
+        }
 
-        fun nextClicked(){
-
-            if (i < textView.size() - 1 ){
-                if(basmalah.visibility == View.VISIBLE){
+        fun nextClicked() {
+            if (i < textView.size() - 1) {
+                if (basmalah.visibility == View.VISIBLE) {
                     textView.next(i)
-                }
-                else
+                } else {
                     textView.next(++i)
-            }
-
-            else{
-                if(ayaNo < numberOfAyahsForSuraArray[sora - 1]) {
+                    previous.isEnabled = true
+                    previous.imageAlpha = 255
+                }
+            } else {
+                if (ayaNo < numberOfAyahsForSuraArray[sora - 1]) {
                     ayaNo++
                     slider.value = ayaNo.toFloat()
-
+                    previous.isEnabled = true
+                    previous.imageAlpha = 255
                     list = gson.filter { aya -> aya.ayaNo == ayaNo }
                         .filter { aya -> aya.sora == sora }[0].ayaText.split(" ").toList()
 
@@ -197,35 +204,12 @@ class MainActivity : AppCompatActivity() {
                     textView.next(i)
                 }
             }
+
+            view.text = "${i+1}   من   ${textView.size()}"
+
         }
 
-        fun specialPreviousClicked() {
-            if (ayaNo > 1){
-                if(i == 0) {
-                    ayaNo--
-                    slider.value = ayaNo.toFloat()
-                    list = gson.filter { aya -> aya.ayaNo == ayaNo }
-                        .filter { aya -> aya.sora == sora }[0].ayaText.split(" ").toList()
-                    newList = list.subList(0, list.size - 1).joinToString(" ")
-                    lastChar = "\u00a0".plus(list.last())
-
-                    string = newList.plus(lastChar)
-                    textView.text = string
-                    textView.paginate(textView.text)
-                    i = 0
-                    textView.next(i)
-                }
-                else{
-                    i = 0
-                    textView.next(i)
-                }
-            }else{
-                i = 0
-                textView.next(i)
-            }
-        }
-
-        fun previousClicked(){
+        fun pastClicked(){
             if (i > 0 )
                 textView.next(--i)
 
@@ -245,12 +229,69 @@ class MainActivity : AppCompatActivity() {
                     i = textView.size() - 1
                     textView.next(i)
                 }
+                else{
+                    previous.isEnabled = false
+                    previous.imageAlpha = 96
+                }
             }
+
+            view.text = "${i+1}   من   ${textView.size()}"
+
         }
 
-        fun setTextView(){
-            previousClicked()
-            nextClicked()
+        fun previousClicked() {
+            if (ayaNo > 1) {
+                if (i == 0) {
+                    ayaNo--
+                    if (ayaNo == 1 && !hideAya) {
+                        previous.isEnabled = false
+                        previous.imageAlpha = 96
+                    }
+                    slider.value = ayaNo.toFloat()
+                    list = gson.filter { aya -> aya.ayaNo == ayaNo }
+                        .filter { aya -> aya.sora == sora }[0].ayaText.split(" ").toList()
+                    newList = list.subList(0, list.size - 1).joinToString(" ")
+                    lastChar = "\u00a0".plus(list.last())
+
+                    string = newList.plus(lastChar)
+                    textView.text = string
+                    textView.paginate(textView.text)
+                    i = 0
+                    textView.next(i)
+                } else {
+                    i = 0
+                    textView.next(i)
+                }
+            } else {
+                previous.isEnabled = false
+                previous.imageAlpha = 96
+                i = 0
+                textView.next(i)
+            }
+
+            view.text = "${i+1}   من   ${textView.size()}"
+
+        }
+
+
+        fun setTextView() {
+            ayaNo
+            slider.value = ayaNo.toFloat()
+
+            list = gson.filter { aya -> aya.ayaNo == ayaNo }
+                .filter { aya -> aya.sora == sora }[0].ayaText.split(" ").toList()
+
+            newList = list.subList(0, list.size - 1).joinToString(" ")
+            lastChar = "\u00a0".plus(list.last())
+
+            string = newList.plus(lastChar)
+            textView.text = string
+
+            textView.paginate(textView.text)
+            i = 0
+            textView.next(i)
+            view.text = "${i+1}   من   ${textView.size()}"
+
         }
 
 
@@ -260,26 +301,27 @@ class MainActivity : AppCompatActivity() {
                 parent: AdapterView<*>,
                 view: View?, position: Int, id: Long
             ) {
-                if (position >= 0){
+                if (position >= 0) {
 
                     if (clicked) {
                         sora = position + 1
                         ayaNo = 1
-                        if(sora != 1 && sora != 9)
+                        if (sora != 1 && sora != 9)
                             textViewPaddingFirst()
 
-                        if((sora == 1 || sora == 9) && basmalah.visibility == View.VISIBLE)
+                        if ((sora == 1 || sora == 9) && basmalah.visibility == View.VISIBLE)
                             textViewPaddingRest()
 
                         slider.value = 1f
 
-                        if(slider.value == 1f){
+                        if (slider.value == 1f) {
                             ayaNo = 1
-                            (view as TextView?)?.text = "سورة ".plus(parent.selectedItem.toString().substringAfter(" "))
+                            (view as TextView?)?.text =
+                                "سورة ".plus(parent.selectedItem.toString().substringAfter(" "))
 
                             count.text = "الآية   ".plus(slider.value.toInt().toString())
                             savedPage = gson.filter { aya -> aya.ayaNo == slider.value.toInt() }
-                                .filter {aya -> aya.sora == spinner.selectedItemPosition + 1 }[0].page
+                                .filter { aya -> aya.sora == spinner.selectedItemPosition + 1 }[0].page
 
                             page.text = "صفحة   ".plus(savedPage)
 
@@ -300,7 +342,7 @@ class MainActivity : AppCompatActivity() {
                         }
 
                         hide.isChecked = false
-                hide.thumbTintList = defaultThumb
+                        hide.thumbTintList = defaultThumb
                         hideAya = false
 
                         slider.valueTo = numberOfAyahsForSuraArray[position].toFloat()
@@ -308,11 +350,12 @@ class MainActivity : AppCompatActivity() {
                     } else {
                         clicked = true
                         sora = position + 1
-                        (view as TextView?)?.text = "سورة ".plus(parent.selectedItem.toString().substringAfter(" "))
+                        (view as TextView?)?.text =
+                            "سورة ".plus(parent.selectedItem.toString().substringAfter(" "))
 
 
                         hide.isChecked = false
-                hide.thumbTintList = defaultThumb
+                        hide.thumbTintList = defaultThumb
                         hideAya = false
 
 
@@ -336,10 +379,14 @@ class MainActivity : AppCompatActivity() {
                 hide.thumbTintList = defaultThumb
                 hideAya = false
 
-                if(slider.value == 1f){
+                if (slider.value == 1f) {
                     ayaNo = 1
+                    if (!hideAya) {
+                        previous.isEnabled = false
+                        previous.imageAlpha = 96
+                    }
 
-                    if(sora != 1 && sora != 9) {
+                    if (sora != 1 && sora != 9) {
                         basmalah.visibility = View.VISIBLE
                         textView.visibility = View.INVISIBLE
                     }
@@ -357,9 +404,10 @@ class MainActivity : AppCompatActivity() {
                     i = 0
                     textView.next(i)
 
-                }
-                else {
+                } else {
                     setTextView()
+                    previous.isEnabled = true
+                    previous.imageAlpha = 255
                     textViewPaddingRest()
                 }
                 i = 0
@@ -374,10 +422,13 @@ class MainActivity : AppCompatActivity() {
                 hide.thumbTintList = defaultThumb
                 hideAya = false
 
-                if(slider.value == 1f){
+                if (slider.value == 1f) {
                     ayaNo = 1
-
-                    if(sora != 1 && sora != 9) {
+                    if (!hideAya) {
+                        previous.isEnabled = false
+                        previous.imageAlpha = 96
+                    }
+                    if (sora != 1 && sora != 9) {
                         basmalah.visibility = View.VISIBLE
                         textView.visibility = View.INVISIBLE
                     }
@@ -394,9 +445,10 @@ class MainActivity : AppCompatActivity() {
                     textView.paginate(textView.text)
                     i = 0
                     textView.next(i)
-                }
-                else {
+                } else {
                     setTextView()
+                    previous.isEnabled = true
+                    previous.imageAlpha = 255
                     textViewPaddingRest()
                 }
                 i = 0
@@ -409,13 +461,13 @@ class MainActivity : AppCompatActivity() {
         slider.addOnChangeListener { slider, value, fromUser ->
             count.text = "الآية   ".plus(slider.value.toInt().toString())
             savedPage = gson.filter { aya -> aya.ayaNo == slider.value.toInt() }
-                .filter {aya -> aya.sora == spinner.selectedItemPosition + 1 }[0].page
+                .filter { aya -> aya.sora == spinner.selectedItemPosition + 1 }[0].page
 
             page.text = "صفحة   ".plus(savedPage)
         }
 
 
-        fun hide(){
+        fun hide() {
             index = 1
             runOnUiThread {
                 val textWithHighlights: Spannable = SpannableString(textView.text)
@@ -430,13 +482,15 @@ class MainActivity : AppCompatActivity() {
                 textView.text = textWithHighlights
             }
         }
-        if (hideAya)
+        if (hideAya) {
             hide()
+        }
 
 
-        fun undoClicked(){
-            var text = textView.text.toString().split(" ","\u00a0").toList()
-            if (index > 1 ){
+
+        fun undoClicked() {
+            var text = textView.text.toString().split(" ", "\u00a0").toList()
+            if (index > 1) {
                 runOnUiThread {
                     val textWithHighlights: Spannable = SpannableString(textView.text)
                     textWithHighlights.setSpan(
@@ -449,19 +503,22 @@ class MainActivity : AppCompatActivity() {
                 }
                 index--
             }
-
-            else{
-                previousClicked()
-                text = textView.text.toString().split(" ","\u00a0").toList()
+            else if (ayaNo != 1) {
+                pastClicked()
+                text = textView.text.toString().split(" ", "\u00a0").toList()
                 index = text.size
+            }
+
+            if (ayaNo == 1 && index == 1) {
+                previous.isEnabled = false
+                previous.imageAlpha = 96
             }
         }
 
 
-
         fun textViewClicked() {
-            val text = textView.text.toString().split(" ","\u00a0").toList()
-            if (index <= text.size-1){
+            val text = textView.text.toString().split(" ", "\u00a0").toList()
+            if (index <= text.size - 1) {
                 runOnUiThread {
                     val textWithHighlights: Spannable = SpannableString(textView.text)
                     textWithHighlights.setSpan(
@@ -472,13 +529,13 @@ class MainActivity : AppCompatActivity() {
                     )
                     textView.text = textWithHighlights
                 }
+                previous.isEnabled = true
+                previous.imageAlpha = 255
                 index++
-            }
-            else{
-                if(slider.value == slider.valueTo && i == textView.size() - 1){
+            } else {
+                if (slider.value == slider.valueTo && i == textView.size() - 1) {
                     nextClicked()
-                }
-                else {
+                } else {
                     nextClicked()
                     hide()
                     textViewClicked()
@@ -488,7 +545,7 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        hide.setOnClickListener{
+        hide.setOnClickListener {
             hideAya = !hideAya
             textViewPaddingRest()
             if (hideAya) {
@@ -499,15 +556,14 @@ class MainActivity : AppCompatActivity() {
                 hide()
                 hide.isChecked = true
                 hide.thumbTintList = ColorStateList.valueOf(Color.WHITE)
-            }
-            else {
+            } else {
                 textView.next(i)
                 hide.isChecked = false
                 hide.thumbTintList = defaultThumb
             }
         }
 
-        hide.setOnTouchListener(object : View.OnTouchListener{
+        hide.setOnTouchListener(object : View.OnTouchListener {
             override fun onTouch(v: View?, event: MotionEvent?): Boolean {
                 if (event?.action == MotionEvent.ACTION_UP) {
                     textViewPaddingRest()
@@ -552,33 +608,46 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
+        view.setOnClickListener {
+            if (basmalah.visibility == View.VISIBLE) {
+                basmalah.visibility = View.GONE
+                textView.visibility = View.VISIBLE
+            } else if (hideAya) textViewClicked() else nextClicked()
 
-        previous.setOnClickListener {
-            if(hideAya) undoClicked() else specialPreviousClicked()
         }
 
-        fun vibratePhone() {
-            val vibrator = this?.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-            if (Build.VERSION.SDK_INT >= 26) {
-                vibrator.vibrate(VibrationEffect.createOneShot(20, VibrationEffect.DEFAULT_AMPLITUDE))
-            } else {
-                vibrator.vibrate(20)
+
+        view.setOnTouchListener { v, event ->
+            if (MotionEvent.ACTION_DOWN == event.action) {
+            } else if (MotionEvent.ACTION_UP == event.action) {
+                v.performClick()
             }
+            true
         }
 
-        previous.setOnLongClickListener(object : OnContinuousClickListener(2000){
-            override fun onContinuousClick(v: View?) {
-                if(hideAya){
+
+
+        previous.setOnTouchListener { v, event ->
+            if (v.isPressed && event.action === MotionEvent.ACTION_UP) {
+                val eventDuration = event.eventTime - event.downTime
+                if (eventDuration > 850) {
+                    v.performLongClick()
+                    if(hideAya) {
                         i = 0
                         textView.next(i)
                         hide()
-                        vibratePhone()
+                        view.text = "${i+1}   من   ${textView.size()}"
+                    } else previousClicked()
+                } else {
+                    v.performClick()
+                    if (hideAya) undoClicked() else previousClicked()
 
                 }
-
             }
+            false
+        }
 
-        })
+
 
     }
 
@@ -596,5 +665,6 @@ class MainActivity : AppCompatActivity() {
         val putSharedPrefs: SharedPreferences = getSharedPreferences(packageName, MODE_PRIVATE)
         putSharedPrefs.edit().putInt("spinner", spinner.selectedItemPosition).apply()
         putSharedPrefs.edit().putFloat("slider", slider.value).apply()
+        putSharedPrefs.edit().putInt("size", textView.size()).apply()
     }
 }
