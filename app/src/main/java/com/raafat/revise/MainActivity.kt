@@ -7,8 +7,6 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.Spanned
@@ -36,7 +34,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var slider: Slider
     private lateinit var spinner: Spinner
     private lateinit var previous: ImageButton
-    private lateinit var view: TextView
+    private lateinit var forTo: TextView
     private lateinit var hide: MaterialSwitch
     private lateinit var count: TextView
     private lateinit var page: TextView
@@ -70,7 +68,7 @@ class MainActivity : AppCompatActivity() {
 
         spinner = findViewById(R.id.sura_spinner)
         slider = findViewById(R.id.slider)
-        view = findViewById(R.id.dummy)
+        forTo = findViewById(R.id.dummy)
         basmalah = findViewById(R.id.basmalah)
         basmalah.visibility = View.GONE
 
@@ -146,7 +144,7 @@ class MainActivity : AppCompatActivity() {
         textView.text = string
 
 
-        view.text = "${i+1}   من   ${savedSize}"
+        forTo.text = "${i + 1}   من   ${savedSize}"
 
 
         slider.value = ayaNo.toFloat()
@@ -205,15 +203,14 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            view.text = "${i+1}   من   ${textView.size()}"
+            forTo.text = "${i + 1}   من   ${textView.size()}"
 
         }
 
-        fun pastClicked(){
-            if (i > 0 )
+        fun pastClicked() {
+            if (i > 0)
                 textView.next(--i)
-
-            else{
+            else {
                 if (ayaNo > 1) {
                     ayaNo--
                     slider.value = ayaNo.toFloat()
@@ -228,14 +225,13 @@ class MainActivity : AppCompatActivity() {
                     textView.paginate(textView.text)
                     i = textView.size() - 1
                     textView.next(i)
-                }
-                else{
+                } else {
                     previous.isEnabled = false
                     previous.imageAlpha = 96
                 }
             }
 
-            view.text = "${i+1}   من   ${textView.size()}"
+            forTo.text = "${i + 1}   من   ${textView.size()}"
 
         }
 
@@ -269,7 +265,7 @@ class MainActivity : AppCompatActivity() {
                 textView.next(i)
             }
 
-            view.text = "${i+1}   من   ${textView.size()}"
+            forTo.text = "${i + 1}   من   ${textView.size()}"
 
         }
 
@@ -290,7 +286,7 @@ class MainActivity : AppCompatActivity() {
             textView.paginate(textView.text)
             i = 0
             textView.next(i)
-            view.text = "${i+1}   من   ${textView.size()}"
+            forTo.text = "${i + 1}   من   ${textView.size()}"
 
         }
 
@@ -338,6 +334,8 @@ class MainActivity : AppCompatActivity() {
                             textView.paginate(textView.text)
                             i = 0
                             textView.next(i)
+                            forTo.text = "${i + 1}   من   ${textView.size()}"
+
 
                         }
 
@@ -403,6 +401,7 @@ class MainActivity : AppCompatActivity() {
                     textView.paginate(textView.text)
                     i = 0
                     textView.next(i)
+                    forTo.text = "${i + 1}   من   ${textView.size()}"
 
                 } else {
                     setTextView()
@@ -445,6 +444,8 @@ class MainActivity : AppCompatActivity() {
                     textView.paginate(textView.text)
                     i = 0
                     textView.next(i)
+                    forTo.text = "${i + 1}   من   ${textView.size()}"
+
                 } else {
                     setTextView()
                     previous.isEnabled = true
@@ -501,18 +502,29 @@ class MainActivity : AppCompatActivity() {
                     )
                     textView.text = textWithHighlights
                 }
-                index--
-            }
-            else if (ayaNo != 1) {
-                pastClicked()
-                text = textView.text.toString().split(" ", "\u00a0").toList()
-                index = text.size
+                --index
+            } else {
+                if (ayaNo != 1) {
+                    pastClicked()
+                    text = textView.text.toString().split(" ", "\u00a0").toList()
+                    index = text.size
+                } else {
+                    if (i > 0) {
+                        textView.next(--i)
+                        index = textView.text.toString().split(" ", "\u00a0").toList().size
+                    }
+                    else{
+                        previous.isEnabled = false
+                        previous.imageAlpha = 96
+
+                    }
+                }
+
             }
 
-            if (ayaNo == 1 && index == 1) {
-                previous.isEnabled = false
-                previous.imageAlpha = 96
-            }
+            forTo.text = "${i + 1}   من   ${textView.size()}"
+
+
         }
 
 
@@ -542,6 +554,9 @@ class MainActivity : AppCompatActivity() {
                 }
 
             }
+
+            forTo.text = "${i + 1}   من   ${textView.size()}"
+
         }
 
 
@@ -552,6 +567,8 @@ class MainActivity : AppCompatActivity() {
                 if (textView.size() > 1 && i > 0) {
                     i = 0
                     textView.next(i)
+                    forTo.text = "${i + 1}   من   ${textView.size()}"
+
                 }
                 hide()
                 hide.isChecked = true
@@ -572,6 +589,8 @@ class MainActivity : AppCompatActivity() {
                         if (textView.size() > 1 && i > 0) {
                             i = 0
                             textView.next(i)
+                            forTo.text = "${i + 1}   من   ${textView.size()}"
+
                         }
                         hide()
                         hide.isChecked = true
@@ -608,7 +627,7 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        view.setOnClickListener {
+        forTo.setOnClickListener {
             if (basmalah.visibility == View.VISIBLE) {
                 basmalah.visibility = View.GONE
                 textView.visibility = View.VISIBLE
@@ -617,7 +636,7 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        view.setOnTouchListener { v, event ->
+        forTo.setOnTouchListener { v, event ->
             if (MotionEvent.ACTION_DOWN == event.action) {
             } else if (MotionEvent.ACTION_UP == event.action) {
                 v.performClick()
@@ -632,21 +651,30 @@ class MainActivity : AppCompatActivity() {
                 val eventDuration = event.eventTime - event.downTime
                 if (eventDuration > 850) {
                     v.performLongClick()
-                    if(hideAya) {
+                    if (hideAya) {
                         i = 0
                         textView.next(i)
                         hide()
-                        view.text = "${i+1}   من   ${textView.size()}"
+                        forTo.text = "${i + 1}   من   ${textView.size()}"
                     } else previousClicked()
+                    if (ayaNo == 1){
+                        previous.isEnabled = false
+                        previous.imageAlpha = 96
+                    }
                 } else {
                     v.performClick()
-                    if (hideAya) undoClicked() else previousClicked()
+                    if (hideAya) {
+                        undoClicked()
 
+                    } else previousClicked()
+                    if (ayaNo == 1 && index == 1 && i == 0){
+                        previous.isEnabled = false
+                        previous.imageAlpha = 96
+                    }
                 }
             }
             false
         }
-
 
 
     }
